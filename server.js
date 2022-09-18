@@ -26,7 +26,6 @@ MongoClient.connect( 'mongodb+srv://admin:qwer1234@cluster0.t2fk11g.mongodb.net/
      */
     db.collection( "post" ).insertOne( { name : "madcow", age : 28 }, ( err, res ) => {
         console.log( "Save Complete" );
-        console.log( "재밌다." );
     } );
 
     app.listen( 8080, () => {
