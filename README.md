@@ -11,4 +11,4 @@ NodeJS : 16.17.0
 ![image](https://user-images.githubusercontent.com/78129823/191512462-d86c686f-12bb-413d-8228-4419f016bf16.png)
 ### 이렇게 저장된 데이터를 html ejs 문법 사용해서 화면에 표시
 <img width="404" alt="image" src="https://user-images.githubusercontent.com/78129823/191512572-7a61fff2-b414-4199-9e3e-7c814fd6a8be.png">
-##### 재밌는거 같기도하고... 너무 쉬운거 같기도 하고.. 좀 더 해봐야겠다.
+### 재밌는거 같기도하고... 너무 쉬운거 같기도 하고.. 좀 더 해봐야겠다.
