@@ -3,6 +3,7 @@ const bodyParser = require( "body-parser" );
 const MongoClient = require( "mongodb" ).MongoClient;
 const app = express();
 
+app.use( "./views/component", express.static( "component" ) )
 app.use( bodyParser.urlencoded( { extended : true } ) );
 app.set( "view engine", "ejs" );
 
@@ -26,7 +27,7 @@ MongoClient.connect( 'mongodb+srv://admin:qwer1234@cluster0.t2fk11g.mongodb.net/
 
 
 app.get( "/", ( req, res ) => {
-    res.sendFile( `${ __dirname }/html/index.html` );
+    res.render( `${ __dirname }/views/index.ejs` );
 } );
 
 app.post( "/add", ( req, res ) => {
@@ -56,15 +57,17 @@ app.post( "/add", ( req, res ) => {
     } );
 } );
 
+app.get( "/write", ( req, res ) => {
+    res.render( `${ __dirname }/views/write.ejs` );
+} )
+
 app.get( "/list", ( req, res ) => {
     /**
      * ejs 파일은 views Dir에 저장하지 않으면 Error: Failed to lookup view 에러 뜸
      * 
      * 9/21 : DB에 저장된 post라는 collection의 모든 데이터를 가져옴
      */
-    db.collection( "post" ).find().toArray( ( err, ressult ) => {
-        console.log(ressult);
-        res.render( "list.ejs", { results : ressult } );
+    db.collection( "post" ).find().toArray( ( err, result ) => {
+        res.render( "list.ejs", { results : result } );
     } );
-
 } );
