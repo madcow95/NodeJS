@@ -11,3 +11,6 @@ NodeJS : 16.17.0
 ![image](https://user-images.githubusercontent.com/78129823/191512462-d86c686f-12bb-413d-8228-4419f016bf16.png)
 ### 이렇게 저장된 데이터를 html ejs 문법 사용해서 화면에 표시
 <img width="404" alt="image" src="https://user-images.githubusercontent.com/78129823/191512572-7a61fff2-b414-4199-9e3e-7c814fd6a8be.png">
+
+## 22/09/22
+### 오늘은 html파일을 ejs파일로 변환시키고, header를 따로 빼서 include할 수 있게 변경만 했다.. 어우 피곤해 주말에 진도좀 나가야지
