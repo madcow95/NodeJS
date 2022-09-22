@@ -8,6 +8,7 @@ app.use( bodyParser.urlencoded( { extended : true } ) );
 app.set( "view engine", "ejs" );
 
 let db;
+const mainDir = `${ __dirname }/views`;
 MongoClient.connect( 'mongodb+srv://admin:qwer1234@cluster0.t2fk11g.mongodb.net/?retryWrites=true&w=majority', ( err, client ) => {
     if( err ) {
         return console.log( { err } );
@@ -27,7 +28,7 @@ MongoClient.connect( 'mongodb+srv://admin:qwer1234@cluster0.t2fk11g.mongodb.net/
 
 
 app.get( "/", ( req, res ) => {
-    res.render( `${ __dirname }/views/index.ejs` );
+    res.render( `${ mainDir }/index.ejs` );
 } );
 
 app.post( "/add", ( req, res ) => {
@@ -58,7 +59,7 @@ app.post( "/add", ( req, res ) => {
 } );
 
 app.get( "/write", ( req, res ) => {
-    res.render( `${ __dirname }/views/write.ejs` );
+    res.render( `${ mainDir }/write.ejs` );
 } )
 
 app.get( "/list", ( req, res ) => {
