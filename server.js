@@ -14,16 +14,8 @@ MongoClient.connect( 'mongodb+srv://admin:qwer1234@cluster0.t2fk11g.mongodb.net/
         return console.log( { err } );
     }
 
-    /**
-     * @Param : db -> MongoDB에서 생성한 db이름인 todoapp에 연결한다.
-     */
     db = client.db( "todoapp" );
-
-    app.listen( 8080, () => {
-        /**
-         * Node Server 띄우는 거
-         */
-    } );
+    app.listen( 8080 );
 } );
 
 
@@ -32,29 +24,26 @@ app.get( "/", ( req, res ) => {
 } );
 
 app.post( "/add", ( req, res ) => {
-    /**
-     * @Param req : { 
-     *      body : {
-     *           html Tag -> input의 name : '입력 값'
-     *      }
-     *  }
-     * 의 형태로 들어옴
-     */
+    db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
+        const totalPostCount = findRes.totalCount + 1;
+        const saveData = {
+            _id : totalPostCount,
+            subject : req.body.todo,
+            dueDate : req.body.deadline
+        }
 
-    /**
-     * collection
-     * @Param : collection이름( 'MongoDB'에서 db생성할 때 입력한 값 )
-     * 
-     * insertOne 
-     * @Param1 : 저장할 데이터
-     * @Param2 : Callback Function
-     */
-    const saveData = {
-        subject : req.body.todo,
-        dueDate : req.body.deadline
-    }
-    db.collection( "post" ).insertOne( saveData, ( err, res ) => {
-        console.log( "Save Completely" );
+        db.collection( "post" ).insertOne( saveData, ( err ) => {
+            if( err ) console.log(err);
+            /**
+             * $set : 값을 변경할 때
+             * $inc : 기존에 입력된 값에 더할 때 (auto increasement와 비슷한듯)
+             */
+            db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
+                if( err ) console.log(err);
+                res.render( `${ mainDir }/index.ejs` );
+            } );
+        } );
+
     } );
 } );
 
@@ -63,12 +52,23 @@ app.get( "/write", ( req, res ) => {
 } )
 
 app.get( "/list", ( req, res ) => {
-    /**
-     * ejs 파일은 views Dir에 저장하지 않으면 Error: Failed to lookup view 에러 뜸
-     * 
-     * 9/21 : DB에 저장된 post라는 collection의 모든 데이터를 가져옴
-     */
     db.collection( "post" ).find().toArray( ( err, result ) => {
         res.render( "list.ejs", { results : result } );
+    } );
+} );
+
+app.delete( "/delete", ( req, res ) => {
+    db.collection( "post" ).deleteOne( { _id : parseInt( req.body._id ) }, ( err ) => {
+        if( err ) console.log( err );
+        // db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : -1 } }, ( err ) => {
+        //     if( err ) {
+        //         console.log(err);
+        //         return "ERROR";
+        //     } else {
+        //         console.log("suc");
+        //         return "SUCCESS";
+        //     }
+            
+        // } )
     } );
 } );

@@ -18,3 +18,45 @@
  * instagram.com/explore/tags/kpop/
  * facebook.com/natgeo/photos/
  */
+- 09/24 -
+/**
+ * @Param : db -> MongoDB에서 생성한 db이름인 todoapp에 연결한다.
+ * server.js : 12
+ */
+
+/**
+ * ejs 파일은 views Dir에 저장하지 않으면 Error: Failed to lookup view 에러 뜸
+ * 
+ * server.js : 22
+ * 9/21 : DB에 저장된 post라는 collection의 모든 데이터를 가져옴
+ */
+
+
+/**
+ * collection
+ * @Param : collection이름( 'MongoDB'에서 db생성할 때 입력한 값 )
+ * 
+ * insertOne 
+ * @Param1 : 저장할 데이터
+ * @Param2 : Callback Function
+ * server.js : 26
+ */
+
+/**
+ * @Param req : { 
+ *      body : {
+ *           html Tag -> input의 name : '입력 값'
+ *      }
+ *  }
+ * 의 형태로 들어옴
+ * server.js : 31
+ */
+
+// findOne : counter collection에서 Parameter와 일치하는 데이터 중 하나만 찾고싶다. server.js : 27
+
+<!-- 
+    @Param results : service.js에서 가져온 db에 저장된 데이터들
+    EJS( npm install ejs 설치 ) 
+    기본 사용법 : <%= 'data' %>
+    list.ejs
+-->
