@@ -19,5 +19,4 @@ NodeJS : 16.17.0
 ## 22/09/24
 ###1. 부트스트랩으로 페이지 좀 꾸밈
 ###2. 게시글 작성, 삭제기능, 게시글 번호 MongoDB 제한자 $inc 이용해서 auto increasement 만듦
-###3. 간만에 AJAX써봄 오랜만에 쓰니 
-<img width="253" alt="image" src="https://user-images.githubusercontent.com/78129823/192100759-033e87bc-ad45-4cbe-abc0-221996fe25a8.png">
+###3. 간만에 AJAX써봄 오랜만에 쓰니 어색하다.
