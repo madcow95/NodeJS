@@ -1,14 +1,16 @@
 const express = require( "express" );
 const bodyParser = require( "body-parser" );
 const MongoClient = require( "mongodb" ).MongoClient;
+const fs = require( "fs" );
 const app = express();
+const mainDir = `${ __dirname }/views`;
 
 app.use( "./views/component", express.static( "component" ) )
 app.use( bodyParser.urlencoded( { extended : true } ) );
 app.set( "view engine", "ejs" );
 
 let db;
-const mainDir = `${ __dirname }/views`;
+
 MongoClient.connect( 'mongodb+srv://admin:qwer1234@cluster0.t2fk11g.mongodb.net/?retryWrites=true&w=majority', ( err, client ) => {
     if( err ) {
         return console.log( { err } );
@@ -60,15 +62,13 @@ app.get( "/list", ( req, res ) => {
 app.delete( "/delete", ( req, res ) => {
     db.collection( "post" ).deleteOne( { _id : parseInt( req.body._id ) }, ( err ) => {
         if( err ) console.log( err );
-        // db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : -1 } }, ( err ) => {
-        //     if( err ) {
-        //         console.log(err);
-        //         return "ERROR";
-        //     } else {
-        //         console.log("suc");
-        //         return "SUCCESS";
-        //     }
-            
-        // } )
+        // 2XX : 서버 응답 성공 코드 / 4XX : 서버 응답 실패 코드
+        res.status( 200 ).send( { msg : "삭제 성공" } );
+    } );
+} );
+
+app.get( "/detail/:id", ( req, res ) => {
+    db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
+        res.render( "detail.ejs", { searchData : searchRes } );
     } );
 } );
