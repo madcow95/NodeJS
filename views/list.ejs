@@ -14,7 +14,7 @@
             <div class="ms-2 me-auto">
               <a href="/detail/<%= res._id %>"><h4>할 일 : <%= res.subject %></h4></a>
               <p>기간 : <%= res.dueDate %></p>
-              <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>`, $( this ) )">삭제</button>
+              <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>` )">삭제</button>
             </div>
             <!-- <span class="badge bg-primary rounded-pill"></span> ==> 나중에 댓글 갯수 넣을예정 -->
           </li>
@@ -42,7 +42,7 @@
     </div>
   </body>
   <script>
-    const deleteBtn = ( postNum, selected ) => {
+    const deleteBtn = ( postNum ) => {
       $.ajax( 
         {
           method : "DELETE",
