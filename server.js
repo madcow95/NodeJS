@@ -1,12 +1,13 @@
 const express = require( "express" );
 const bodyParser = require( "body-parser" );
 const MongoClient = require( "mongodb" ).MongoClient;
-const fs = require( "fs" );
+const MethodOverride = require( "method-override" );
 const app = express();
 const mainDir = `${ __dirname }/views`;
 
 app.use( "./views/component", express.static( "component" ) )
 app.use( bodyParser.urlencoded( { extended : true } ) );
+app.use( MethodOverride( "_method" ) );
 app.set( "view engine", "ejs" );
 
 let db;
@@ -30,8 +31,8 @@ app.post( "/add", ( req, res ) => {
         const totalPostCount = findRes.totalCount + 1;
         const saveData = {
             _id : totalPostCount,
-            subject : req.body.todo,
-            dueDate : req.body.deadline
+            subject : req.body.subject,
+            content : req.body.content
         }
 
         db.collection( "post" ).insertOne( saveData, ( err ) => {
@@ -70,5 +71,18 @@ app.delete( "/delete", ( req, res ) => {
 app.get( "/detail/:id", ( req, res ) => {
     db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
         res.render( "detail.ejs", { searchData : searchRes } );
+    } );
+} );
+
+app.put( "/edit", ( req, res ) => {
+    /**
+     * detail ejs에서 수정 요청을 보냈을 때 실행
+     * form에 입력된 값들이 db.collection에 업데이트
+     */
+    console.log(req.body);
+    db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
+                                       { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
+        if( err ) console.log(err);
+        res.render( "detail.ejs", { searchData : req.body } );
     } );
 } );

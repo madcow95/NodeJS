@@ -1,34 +1,54 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <%- include( './component/header.ejs' ) %>
-    <div class="container mt-5">
-        <div class="card mb-3" style="max-width: 1080px; height: 540px;">
-            <div class="row g-0">
-              <div class="col-md-4">
-                <img class="img-fluid rounded-start" alt="...">
-              </div>
-              <div class="col-md-8">
-                <div class="card-body">
-                  <h5 class="card-title"><%= searchData.subject %></h5>
-                  <p class="card-text"><%= searchData.dueDate %></p>
-                  <p class="card-text"><small class="text-muted">게시글 상세보기 페이지임.</small></p>
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+  </head>
+  <body>
+      <%- include( './component/header.ejs' ) %>
+      <div class="container mt-5">
+        <form action="/edit?_method=PUT" method="POST" id="form">
+          <div class="card mb-3" style="max-width: 1080px; height: 540px;">
+              <div class="row g-0">
+                <div class="col-md-4">
+                  <img class="img-fluid rounded-start" alt="...">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <input type="hidden" id="postId" name="postId" value="<%= searchData._id %>">
+                    <h5 class="card-title">제목 : <input type="text" disabled value="<%= searchData.subject %>" id="subject" name="subject"></h5>
+                    <p class="card-text">내용 : <input type="text" disabled value="<%= searchData.content %>" id="content" name="content"></p>
+                    <p class="card-text"><small class="text-muted">게시글 상세보기 페이지임.</small></p>
+                  </div>
                 </div>
               </div>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-outline-dark">Back</button>
-                <button class="btn btn-primary" type="button">Modify</button>
-                <button class="btn btn-danger" type="button">Delete</button>
-            </div>
-        </div>
-    </div>
-</body>
+          </div>
+          <div class="row justify-content-center">
+              <div class="d-grid gap-2 d-md-block">
+                  <button class="btn btn-outline-dark">Back</button>
+                  <button class="btn btn-primary" type="button" id="modifyActive">Modify</button>
+                  <button class="btn btn-primary" type="button" id="modifyComp" style="display: none;">Modify Comp</button>
+                  <button class="btn btn-danger" type="button">Delete</button>
+              </div>
+          </div>
+        </form>
+      </div>
+  </body>
+  <script>
+    $( "#modifyActive" ).click( () => {
+      $( "#subject" ).attr( "disabled", false );
+      $( "#content" ).attr( "disabled", false );
+
+      $( "#modifyActive" ).hide();
+      $( "#modifyComp" ).show();
+    } );
+
+    $( "#modifyComp" ).click( () => {
+      $( "#modifyActive" ).show();
+      $( "#modifyComp" ).hide();
+
+      $( "#form" ).submit();
+    } );
+  </script>
 </html>
