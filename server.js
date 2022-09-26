@@ -79,7 +79,6 @@ app.put( "/edit", ( req, res ) => {
      * detail ejs에서 수정 요청을 보냈을 때 실행
      * form에 입력된 값들이 db.collection에 업데이트
      */
-    console.log(req.body);
     db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
                                        { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
         if( err ) console.log(err);
