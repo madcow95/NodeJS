@@ -1,14 +1,24 @@
-const express = require( "express" );
-const bodyParser = require( "body-parser" );
-const MongoClient = require( "mongodb" ).MongoClient;
-const MethodOverride = require( "method-override" );
-const app = express();
-const mainDir = `${ __dirname }/views`;
+const express           = require( "express" );
+const bodyParser        = require( "body-parser" );
+const MongoClient       = require( "mongodb" ).MongoClient;
+const MethodOverride    = require( "method-override" );
+const passport          = require( "passport" );
+const localStrategy     = require( "passport-local" ).Strategy;
+const session           = require( "express-session" );
 
+const mainDir           = `${ __dirname }/views`;
+const app               = express();
+
+/**
+ * 미들웨어 : Request - Response 중간에 실행되는 코드
+ */
 app.use( "./views/component", express.static( "component" ) )
 app.use( bodyParser.urlencoded( { extended : true } ) );
 app.use( MethodOverride( "_method" ) );
 app.set( "view engine", "ejs" );
+app.use( session( { secret : "secretCode", resave : true, saveUninitialized : false } ) );
+app.use( passport.initialize() );
+app.use( passport.session() );
 
 let db;
 
@@ -84,4 +94,60 @@ app.put( "/edit", ( req, res ) => {
         if( err ) console.log(err);
         res.render( "detail.ejs", { searchData : req.body } );
     } );
+} );
+app.get( "/login", ( req, res ) => {
+    res.render( `${ mainDir }/login.ejs` );
+} );
+
+app.post( "/login", passport.authenticate( "local", {
+    /**
+     * 로그인에 실패하면 fail로 redirect
+     */
+    failureRedirect : "/fail" 
+} ) ,( req, res ) => {
+    /**
+     * 로그인에 성공하면 홈으로 이동
+     */
+    res.redirect( "/" );
+} );
+
+/**
+ * passport.use : POST login의 중간 Parameter인 passport.authenticate를 통해 실행됨.
+ * @Param usernameField     : login.ejs의 from에 있는 아이디 입력 input의 name
+ * @Param passowrdField     : login.ejs의 from에 있는 비밀번호 입력 input의 name
+ * @Param session           : session 사용 유무
+ * @Param passReqToCallback : 사용자가 입력한 아이디/비번 외의 정보를 가져오려면 true
+ * 
+ * Todo : pwd 암호화/복호화 비교
+ */
+passport.use( new localStrategy( {
+    usernameField       : "username",
+    passwordField       : "password",
+    session             : true,
+    passReqToCallback   : false
+}, ( enterUserName, enterPassword, done ) => {
+    db.collection( "member" ).findOne( { username : enterUserName }, ( err, loginRes ) => {
+        if( err ) return done( err );
+        if( !loginRes ) return done( null, false, { message : "존재하지 않는 아이디 입니다." } );
+        if( enterPassword == loginRes.password ) {
+            console.log("login suc");
+            return done( null, loginRes );
+        } else {
+            console.log("pwd fail");
+            return done( null, false, { message : "비밀번호를 확인해주세요." } );
+        }
+    } );
+} ) );
+
+/**
+ * @Function serializeUser   : 세션을 저장시킴(로그인 성공시)
+ * @Function deserializeUser : 마이페이지 접속시 발동 / 이 세션 데이터를 가진 사람을 db에서 find
+ */
+passport.serializeUser( ( user, done ) => {
+    console.log(user);
+    done( null, user.username );
+} );
+
+passport.deserializeUser( ( username, done ) => {
+    done( null, {} );
 } );

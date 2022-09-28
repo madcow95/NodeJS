@@ -60,3 +60,8 @@
     기본 사용법 : <%= 'data' %>
     list.ejs
 -->
+
+회원 인증 방법
+1. session-based
+2. token-based(JWT -> JSON Web Token) => 학원에서 했던거인듯
+3. Open Authentication(OAuth) -> google, github 등 다른 곳의 정보로 로그인하는 소셜로그인
