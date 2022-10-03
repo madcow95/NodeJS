@@ -136,24 +136,47 @@ passport.use( new localStrategy( {
         if( err ) return done( err );
         if( !loginRes ) return done( null, false, { message : "존재하지 않는 아이디 입니다." } );
         if( enterPassword == loginRes.password ) {
-            console.log("login suc");
             return done( null, loginRes );
         } else {
-            console.log("pwd fail");
             return done( null, false, { message : "비밀번호를 확인해주세요." } );
         }
     } );
 } ) );
 
 /**
+ * 미들웨어 사용법
+ * mypage경로로 접속 했을 때 loginCheck를 실행시킴
+ */
+app.get( "/mypage", loginCheck, ( req , res ) => {
+    res.render( "mypage.ejs", { user : req.user } );
+} );
+
+/**
+ * 미들웨어에서는 arrow function이 안먹는다
+ * 왜일까?
+ */
+function loginCheck( req, res, next ) {
+    console.log("fx login check",req.user);
+    if( req.user ) {
+        next();
+    } else {
+        res.send( "Not Login Yet" );
+    }
+}
+
+/**
  * @Function serializeUser   : 세션을 저장시킴(로그인 성공시)
  * @Function deserializeUser : 마이페이지 접속시 발동 / 이 세션 데이터를 가진 사람을 db에서 find
  */
 passport.serializeUser( ( user, done ) => {
-    console.log(user);
     done( null, user.username );
 } );
 
+/**
+ * db collection이름을 항상 유의하자
+ */
 passport.deserializeUser( ( username, done ) => {
-    done( null, {} );
+    db.collection( "member" ).findOne( { username : username }, ( err, res ) => {
+        done( null, res );
+    } );
 } );
