@@ -156,7 +156,6 @@ app.get( "/mypage", loginCheck, ( req , res ) => {
  * 왜일까?
  */
 function loginCheck( req, res, next ) {
-    console.log("fx login check",req.user);
     if( req.user ) {
         next();
     } else {
