@@ -32,4 +32,7 @@ NodeJS : 16.17.0
 ## 22/09/28
 ### 1. 로그인 페이지 및 기능 만듬
 ### 2. 로그인 할 때 입력한 id, pwd로 db조회해서 있으면 session에 쿠기 발행, 없으면 에러 메세지 
-### 3. npm install passport passport-local express-session로 필요한 것들 다운로드 
+### 3. npm install passport passport-local express-session로 필요한 것들 다운로드
+
+## 22/09/29 ~ 22/10/03
+### 잠시 휴가..
