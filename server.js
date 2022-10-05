@@ -38,8 +38,9 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 } );
 
 
-app.get( "/", ( req, res ) => {
+app.get( "/", loginCheck, ( req, res ) => {
     res.render( `${ mainDir }/index.ejs` );
+    res.render( `${ mainDir }/header.ejs`, { user : req.user } );
 } );
 
 app.post( "/add", ( req, res ) => {
@@ -66,13 +67,15 @@ app.post( "/add", ( req, res ) => {
     } );
 } );
 
-app.get( "/write", ( req, res ) => {
+app.get( "/write", loginCheck, ( req, res ) => {
     res.render( `${ mainDir }/write.ejs` );
+    res.render( `${ mainDir }/header.ejs`, { user : null } );
 } )
 
-app.get( "/list", ( req, res ) => {
+app.get( "/list", loginCheck, ( req, res ) => {
     db.collection( "post" ).find().toArray( ( err, result ) => {
         res.render( "list.ejs", { results : result } );
+        res.render( `${ mainDir }/header.ejs`, { user : null } );
     } );
 } );
 
@@ -101,8 +104,9 @@ app.put( "/edit", ( req, res ) => {
         res.render( "detail.ejs", { searchData : req.body } );
     } );
 } );
-app.get( "/login", ( req, res ) => {
+app.get( "/login", loginCheck, ( req, res ) => {
     res.render( `${ mainDir }/login.ejs` );
+    res.render( `${ mainDir }/header.ejs`, { user : null } );
 } );
 
 app.post( "/login", passport.authenticate( "local", {
@@ -159,7 +163,8 @@ function loginCheck( req, res, next ) {
     if( req.user ) {
         next();
     } else {
-        res.send( "Not Login Yet" );
+        console.log(req.route.path.replace("/", ""));
+        res.render( `${ req.route.path.replace( "/", "" ) }.ejs`, { user : null } );
     }
 }
 
