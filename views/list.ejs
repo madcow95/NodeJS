@@ -8,6 +8,13 @@
   <body>
     <%- include( './component/header.ejs' ) %>
     <div class="container mt-5">
+
+      <h4 class="ml-2 my-3 text-center">글 리스트들</h4>
+      <div class="container input-group mb-2">
+        <input class="form-control" id="searchStr">
+        <button class="input-group-append btn btn-danger" onclick="searchBtn()">검색</button>
+      </div>
+
       <ol class="list-group list-group-numbered">
         <% var i = 1; %>
         <% for( const res of results ) { %>
@@ -60,5 +67,16 @@
         console.log(xhr, textStatus, errorThrown);
        } );
     }
+
+    const searchBtn = () => {
+      window.location.replace( `/search?value=${ $( "#searchStr" ).val() }` );
+    }
+
+    /**
+     * $.param : 안에 Object형 => { searchStr1 : str1, searchstr2 : str2 } 을 넣어주면 parameter형태로 변환
+     * $(form).serialize() => form Tag안의 input Tag에 name을 기준으로 데이터를 모아서 parameter형태로 변환
+     * $.param( new Object() );
+     * $("form").serialize();
+     */
   </script>
 </html>

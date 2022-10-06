@@ -38,9 +38,8 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 } );
 
 
-app.get( "/", loginCheck, ( req, res ) => {
+app.get( "/", ( req, res ) => {
     res.render( `${ mainDir }/index.ejs` );
-    res.render( `${ mainDir }/header.ejs`, { user : req.user } );
 } );
 
 app.post( "/add", ( req, res ) => {
@@ -67,15 +66,54 @@ app.post( "/add", ( req, res ) => {
     } );
 } );
 
-app.get( "/write", loginCheck, ( req, res ) => {
+app.get( "/write", ( req, res ) => {
     res.render( `${ mainDir }/write.ejs` );
-    res.render( `${ mainDir }/header.ejs`, { user : null } );
 } )
 
-app.get( "/list", loginCheck, ( req, res ) => {
+app.get( "/list", ( req, res ) => {
     db.collection( "post" ).find().toArray( ( err, result ) => {
         res.render( "list.ejs", { results : result } );
-        res.render( `${ mainDir }/header.ejs`, { user : null } );
+    } );
+} );
+
+app.get( "/search", ( req, res ) => {
+    const searchStr = req.query.value;
+    /**
+     * 그냥 find로 찾는건 하나하나 검색하기 때문에 오래걸림 -> indexing이용해서 검색 => 업다운 게임같이 검색을 해서 빠르게 찾을 수 있음(대신 sort가 잘 되어있어야됨).
+     * indexing search -> 빠른 검색, or 조건으로 검색, -검색어 : 해당 단어 제외 검색, "검색어" : 정확히 일치하는 단어만 검색
+     */
+
+    // find로 indexing 없이 검색
+    // db.collection( "post" ).find( { subject : searchStr } ).toArray( ( err, searchRes ) => {
+    //     res.render( "list.ejs", { results : searchRes } );
+    // } );
+
+    // find 함수 내에서 indexing을 통한 검색 => 여러 문제로 인해 custom searchIndex로 수정
+    // db.collection( "post" ).find( { $text : { $search : searchStr } } ).toArray( ( err, searchRes ) => {
+    //     console.log(searchRes);
+    //     res.render( "list.ejs", { results : searchRes } );
+    // } );
+    // dataPipeLine
+    /**
+     * $sort : { _id : 1 } 1 : 오름차순, -1 : 내림차순
+     * $limit : 10 // 가져올 갯수 제한
+     * $project : { subject : 1, _id : 1, score : { $meta : "searchScore" } }
+     * 1 : 가져옴, 0 : 안가져옴, score : 내가 따로 지정 안해줘도 알아서 점수? 같은걸 매겨주나봄 -> 높은 순으로 가져옴
+     */
+    const searchCriteria = [
+        {
+            $search : {
+                index : "subjectSearch",
+                text  : {
+                    query : searchStr,
+                    path  : "subject" // 제목, 내용 둘 다 찾고 싶으면 [ 'subject', 'content' ]
+                }
+            }
+        }
+    ];
+    db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
+        console.log(searchRes);
+        res.render( "list.ejs", { results : searchRes } );
     } );
 } );
 
@@ -104,9 +142,8 @@ app.put( "/edit", ( req, res ) => {
         res.render( "detail.ejs", { searchData : req.body } );
     } );
 } );
-app.get( "/login", loginCheck, ( req, res ) => {
+app.get( "/login", ( req, res ) => {
     res.render( `${ mainDir }/login.ejs` );
-    res.render( `${ mainDir }/header.ejs`, { user : null } );
 } );
 
 app.post( "/login", passport.authenticate( "local", {
@@ -160,11 +197,11 @@ app.get( "/mypage", loginCheck, ( req , res ) => {
  * 왜일까?
  */
 function loginCheck( req, res, next ) {
+    console.log("fx login check",req.user);
     if( req.user ) {
         next();
     } else {
-        console.log(req.route.path.replace("/", ""));
-        res.render( `${ req.route.path.replace( "/", "" ) }.ejs`, { user : null } );
+        res.send( "Not Login Yet" );
     }
 }
 
