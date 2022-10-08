@@ -65,6 +65,10 @@ app.get( "/login", ( req, res ) => {
     res.render( `${ mainDir }/login.ejs` );
 } );
 
+app.get( "/signUp", ( req, res ) => {
+    res.render( `${ mainDir }/signup.ejs` );
+} );
+
 app.post( "/login", passport.authenticate( "local", {
     /**
      * 로그인에 실패하면 fail로 redirect
