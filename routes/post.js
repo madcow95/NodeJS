@@ -1,7 +1,20 @@
 /**
  * npm으로 설치했던 라이브러리를 사용합니당 이라는 뜻
  */
-var router = require( "express" ).Router();
+const MongoClient   = require( "mongodb" ).MongoClient;
+let router          = require( "express" ).Router();
+let path            = require('path');
+
+let ViewDir     = `${ path.dirname(module.parent.filename) }/views`;
+let db;
+
+MongoClient.connect( process.env.DB_URL, ( err, client ) => {
+    if( err ) {
+        return console.log( { err } );
+    }
+
+    db = client.db( "todoapp" );
+} );
 
 router.post( "/add", ( req, res ) => {
     db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
@@ -23,10 +36,9 @@ router.post( "/add", ( req, res ) => {
              */
             db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
                 if( err ) console.log(err);
-                res.render( `${ mainDir }/index.ejs` );
+                res.render( `${ ViewDir }/index.ejs` );
             } );
         } );
-
     } );
 } );
 

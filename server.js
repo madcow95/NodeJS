@@ -11,9 +11,7 @@ const multer            = require( "multer" );
 const mainDir           = `${ __dirname }/views`;
 const app               = express();
 
-/**
- * 미들웨어 : Request - Response 중간에 실행되는 코드
- */
+// 미들웨어 : Request - Response 중간에 실행되는 코드
 require( "dotenv" ).config();
 app.use( "./views/component", express.static( "component" ) )
 app.set( "view engine", "ejs" );
@@ -28,11 +26,6 @@ app.use( "/post", require( "./routes/post.js" ) );
 
 let db;
 
-/**
- * 아래 이상한 긴 글자들은 db접속 문자열(환경변수 : environment variable)로 개발환경 변경이나 컴퓨터를 바꾸면 수정이 필요할 수도 있음
- * 이러한 환경 변수들을 따로 관리해야함 -> 그렇게 하기 위해 .env 파일로 관리 하는데 그러면 server.js가 유출되도 따로 관리하기 때문에
- * 보안상 이점이 약간 있음
- */
 MongoClient.connect( process.env.DB_URL, ( err, client ) => {
     if( err ) {
         return console.log( { err } );
