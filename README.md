@@ -58,4 +58,9 @@ NodeJS : 16.17.0
 
 ## 22/10/10
 ### 1. 이미지 업로드, 업로드한 이미지 
-### 2. Router 정상적으로 작동안해서 제대로 작동되게 
+### 2. Router 정상적으로 작동안해서 제대로 작동되게 수정
+### 3. 화면 로그인 여부에 따라 보이는 화면 다르게 수정
+<img width="200" alt="image" src="https://user-images.githubusercontent.com/78129823/194882544-f25e54ed-0956-4255-8e94-e7cc6c0e974d.png">
+<img width="200" alt="image" src="https://user-images.githubusercontent.com/78129823/194882666-1f862de5-19b4-4ce2-9e37-d32d9677e162.png">
+
+
