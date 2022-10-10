@@ -1,53 +1,53 @@
 /**
  * npm으로 설치했던 라이브러리를 사용합니당 이라는 뜻
  */
- const MongoClient   = require( "mongodb" ).MongoClient;
+const MongoClient   = require( "mongodb" ).MongoClient;
+const { ObjectId }  = require( "mongodb" );
 
- let router          = require( "express" ).Router();
-const { ObjectId } = require("mongodb");
- let path            = require( "path" );
- let ViewDir         = `${ path.dirname( module.parent.filename ) }/views`;
- let db;
+let router          = require( "express" ).Router();
+let path            = require( "path" );
+let ViewDir         = `${ path.dirname( module.parent.filename ) }/views`;
+let db;
  
- MongoClient.connect( process.env.DB_URL, ( err, client ) => {
-     if( err ) {
-         return console.log( { err } );
-     }
+MongoClient.connect( process.env.DB_URL, ( err, client ) => {
+    if( err ) {
+        return console.log( { err } );
+    }
+
+    db = client.db( "todoapp" );
+} );
  
-     db = client.db( "todoapp" );
- } );
- 
- router.post( "/add", ( req, res ) => {
-    db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
-        const totalPostCount = findRes.totalCount + 1;
-        const saveData = {
-            _id : totalPostCount,
-            subject : req.body.subject,
-            content : req.body.content
-        }
-        // 나중에 로그인 세션 만료 됐을 때 err msg return방법으로 전환
-        if( req.user ) {
-            saveData.username = req.user._id;
-        }
-        db.collection( "post" ).insertOne( saveData, ( err ) => {
+router.post( "/add", ( req, res ) => {
+db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
+    const totalPostCount = findRes.totalCount + 1;
+    const saveData = {
+        _id : totalPostCount,
+        subject : req.body.subject,
+        content : req.body.content
+    }
+    // 나중에 로그인 세션 만료 됐을 때 err msg return방법으로 전환
+    if( req.user ) {
+        saveData.username = req.user._id;
+    }
+    db.collection( "post" ).insertOne( saveData, ( err ) => {
+        if( err ) console.log(err);
+        /**
+         * $set : 값을 변경할 때
+         * $inc : 기존에 입력된 값에 더할 때 (auto increasement와 비슷한듯)
+         */
+        db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
             if( err ) console.log(err);
-            /**
-             * $set : 값을 변경할 때
-             * $inc : 기존에 입력된 값에 더할 때 (auto increasement와 비슷한듯)
-             */
-            db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
-                if( err ) console.log(err);
-                db.collection( "post" ).find().toArray( ( err, result ) => {
-                    if( req.user ) {
-                        res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
-                    } else {
-                        res.render( `${ ViewDir }/list.ejs`, { user : null, results : result } );
-                    }
-                } );
+            db.collection( "post" ).find().toArray( ( err, result ) => {
+                if( req.user ) {
+                    res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
+                } else {
+                    res.render( `${ ViewDir }/list.ejs`, { user : null, results : result } );
+                }
             } );
         } );
     } );
- } );
+} );
+} );
 
 router.get( "/detail/:id", ( req, res ) => {
     db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
@@ -55,32 +55,31 @@ router.get( "/detail/:id", ( req, res ) => {
     } );
 } );
  
- router.put( "/edit", ( req, res ) => {
-     /**
-      * detail ejs에서 수정 요청을 보냈을 때 실행
-      * form에 입력된 값들이 db.collection에 업데이트
-      */
-     db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
-                                        { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
-         if( err ) console.log(err);
-         res.render( "detail.ejs", { searchData : req.body } );
-     } );
- } );
+router.put( "/edit", ( req, res ) => {
+    /**
+     * detail ejs에서 수정 요청을 보냈을 때 실행
+     * form에 입력된 값들이 db.collection에 업데이트
+     */
+    db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
+                                    { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
+        if( err ) console.log(err);
+        res.render( "detail.ejs", { searchData : req.body } );
+    } );
+} );
  
- router.delete( "/delete", ( req, res ) => {
+router.delete( "/delete", ( req, res ) => {
     const deleteDate = {
         _id : parseInt( req.body._id ),
         username : ObjectId( req.body.username )
     }
     db.collection( "post" ).deleteOne( deleteDate, ( err ) => {
         if( err ) console.log( err );
-        // 2XX : 서버 응답 성공 코드 / 4XX : 서버 응답 실패 코드
         res.status( 200 ).send( { msg : "삭제 성공" } );
     } );
- } );
+} );
  
- router.get( "/search", ( req, res ) => {
-     const searchStr = req.query.value;
+router.get( "/search", ( req, res ) => {
+    const searchStr = req.query.value;
      /**
       * 그냥 find로 찾는건 하나하나 검색하기 때문에 오래걸림 -> indexing이용해서 검색 => 업다운 게임같이 검색을 해서 빠르게 찾을 수 있음(대신 sort가 잘 되어있어야됨).
       * indexing search -> 빠른 검색, or 조건으로 검색, -검색어 : 해당 단어 제외 검색, "검색어" : 정확히 일치하는 단어만 검색
@@ -103,22 +102,22 @@ router.get( "/detail/:id", ( req, res ) => {
       * $project : { subject : 1, _id : 1, score : { $meta : "searchScore" } }
       * 1 : 가져옴, 0 : 안가져옴, score : 내가 따로 지정 안해줘도 알아서 점수? 같은걸 매겨주나봄 -> 높은 순으로 가져옴
       */
-     const searchCriteria = [
-         {
-             $search : {
-                 index : "subjectSearch",
-                 text  : {
-                     query : searchStr,
-                     path  : "subject" // 제목, 내용 둘 다 찾고 싶으면 [ 'subject', 'content' ]
-                 }
-             }
-         }
-     ];
-     db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
-         res.render( "list.ejs", { results : searchRes } );
-     } );
- } );
+    const searchCriteria = [
+        {
+            $search : {
+                index : "subjectSearch",
+                text  : {
+                    query : searchStr,
+                    path  : "subject" // 제목, 내용 둘 다 찾고 싶으면 [ 'subject', 'content' ]
+                }
+            }
+        }
+    ];
+    db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
+        res.render( "list.ejs", { results : searchRes } );
+    } );
+} );
  
- // 다른곳에서 post.js를 사용하기 위해 export
- module.exports = router;
+// 다른곳에서 post.js를 사용하기 위해 export
+module.exports = router;
  
