@@ -4,6 +4,7 @@
  const MongoClient   = require( "mongodb" ).MongoClient;
 
  let router          = require( "express" ).Router();
+const { ObjectId } = require("mongodb");
  let path            = require( "path" );
  let ViewDir         = `${ path.dirname( module.parent.filename ) }/views`;
  let db;
@@ -67,15 +68,18 @@ router.get( "/detail/:id", ( req, res ) => {
  } );
  
  router.delete( "/delete", ( req, res ) => {
-     const deleteDate = {
-         _id : parseInt( req.body._id ),
-         username : req.body.username
-     }
-     db.collection( "post" ).deleteOne( deleteDate, ( err ) => {
-         if( err ) console.log( err );
-         // 2XX : 서버 응답 성공 코드 / 4XX : 서버 응답 실패 코드
-         res.status( 200 ).send( { msg : "삭제 성공" } );
-     } );
+    console.log( req.body._id );
+    console.log( req.body.username);
+    
+    const deleteDate = {
+        _id : parseInt( req.body._id ),
+        username : ObjectId( req.body.username )
+    }
+    db.collection( "post" ).deleteOne( deleteDate, ( err ) => {
+        if( err ) console.log( err );
+        // 2XX : 서버 응답 성공 코드 / 4XX : 서버 응답 실패 코드
+        res.status( 200 ).send( { msg : "삭제 성공" } );
+    } );
  } );
  
  router.get( "/search", ( req, res ) => {

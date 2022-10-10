@@ -25,7 +25,7 @@
               <p>기간 : <%= res.content %></p>
               <% if( user ) { %>
                 <% if( user._id.toString() == res.username.toString() ) { %>
-                  <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>` )">삭제</button>
+                  <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>`, `<%= user._id %>` )">삭제</button>
                 <% } %>
               <% } %>
             </div>
@@ -55,13 +55,14 @@
     </div>
   </body>
   <script>
-    const deleteBtn = ( postNum ) => {
+    const deleteBtn = ( postNum, userId ) => {
       $.ajax( 
         {
           method : "DELETE",
           url    : "/post/delete",
           data   : {
-            _id : postNum
+            _id  : postNum,
+            username : userId
           }
         }
        ).done( ( res ) => {
