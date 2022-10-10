@@ -5,6 +5,8 @@ const MethodOverride    = require( "method-override" );
 const passport          = require( "passport" );
 const localStrategy     = require( "passport-local" ).Strategy;
 const session           = require( "express-session" );
+// file upload를 위한 미들웨어
+const multer            = require( "multer" );
 
 const mainDir           = `${ __dirname }/views`;
 const app               = express();
@@ -160,3 +162,32 @@ app.post( "/register", ( req, res ) => {
         } );
     } )
 } );
+
+app.get( "/upload", ( req, res ) => {
+    res.render( "upload.ejs" );
+} );
+
+const storage           = multer.diskStorage( {
+    destination : ( req, file, cb ) => {
+        cb( null, "./public/image" );
+    },
+    filename : ( req, file, cb ) => {
+        cb( null, file.originalname );
+    }
+    //,
+    // filefilter : ( req, file, cb ) => {
+    //     cb( null  )
+    // }
+} ); // disk에 저장, memoryStorage : memory에 저장
+const FileUpload = multer( { storage : storage } );
+
+// npm install multer libary(파일을 쉽게 관리하기 위함)이용해서 file upload
+// single의 Param : input의 name
+// array('name', num)
+app.post( "/upload", FileUpload.single( "FileName" ), ( req, res ) => {
+    res.send( "upload comp" );
+} );
+
+app.get( "/image/:imageName", ( req, res ) => {
+    res.sendFile( `${ __dirname }/public/image/${ req.params.imageName }` );
+} )
