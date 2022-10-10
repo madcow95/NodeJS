@@ -50,12 +50,6 @@ app.get( "/list", ( req, res ) => {
     } );
 } );
 
-app.get( "/detail/:id", ( req, res ) => {
-    db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
-        res.render( "detail.ejs", { searchData : searchRes } );
-    } );
-} );
-
 app.get( "/login", ( req, res ) => {
     res.render( `${ mainDir }/login.ejs` );
 } );
@@ -160,7 +154,7 @@ app.get( "/upload", ( req, res ) => {
     res.render( "upload.ejs" );
 } );
 
-const storage           = multer.diskStorage( {
+const storage = multer.diskStorage( {
     destination : ( req, file, cb ) => {
         cb( null, "./public/image" );
     },

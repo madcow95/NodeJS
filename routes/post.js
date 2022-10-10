@@ -2,10 +2,10 @@
  * npm으로 설치했던 라이브러리를 사용합니당 이라는 뜻
  */
  const MongoClient   = require( "mongodb" ).MongoClient;
+
  let router          = require( "express" ).Router();
  let path            = require( "path" );
- 
- let ViewDir     = `${ path.dirname( module.parent.filename ) }/views`;
+ let ViewDir         = `${ path.dirname( module.parent.filename ) }/views`;
  let db;
  
  MongoClient.connect( process.env.DB_URL, ( err, client ) => {
@@ -36,11 +36,19 @@
              */
             db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
                 if( err ) console.log(err);
-                res.render( `${ ViewDir }/index.ejs` );
+                db.collection( "post" ).find().toArray( ( err, result ) => {
+                    res.render( "list.ejs", { results : result } );
+                } );
             } );
         } );
     } );
  } );
+
+router.get( "/detail/:id", ( req, res ) => {
+    db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
+        res.render( "detail.ejs", { searchData : searchRes } );
+    } );
+} );
  
  router.put( "/edit", ( req, res ) => {
      /**
@@ -104,10 +112,6 @@
      db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
          res.render( "list.ejs", { results : searchRes } );
      } );
- } );
- 
- router.get( "/test", ( req, res ) => {
-     res.send( "test page" );
  } );
  
  // 다른곳에서 post.js를 사용하기 위해 export

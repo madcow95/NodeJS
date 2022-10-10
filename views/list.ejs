@@ -21,7 +21,7 @@
           <li class="list-group-item d-flex justify-content-between align-items-start">
             <div class="ms-2 me-auto">
               <p>글 번호 : <%= i %></p>
-              <a href="/detail/<%= res._id %>"><h4>할 일 : <%= res.subject %></h4></a>
+              <a href="/post/detail/<%= res._id %>"><h4>할 일 : <%= res.subject %></h4></a>
               <p>기간 : <%= res.content %></p>
               <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>` )">삭제</button>
             </div>
