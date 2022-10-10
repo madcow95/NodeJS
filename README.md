@@ -1,3 +1,5 @@
+# 에러 정리나 테스트 해본것들은 https://blog.naver.com/lobasketve 에서 
+
 # 개발환경
 <img width="485" alt="image" src="https://user-images.githubusercontent.com/78129823/190897584-d4e9f1e8-93b5-4283-94dd-9d7f28563210.png">
 NodeJS : 16.17.0
