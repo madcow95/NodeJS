@@ -68,9 +68,6 @@ router.get( "/detail/:id", ( req, res ) => {
  } );
  
  router.delete( "/delete", ( req, res ) => {
-    console.log( req.body._id );
-    console.log( req.body.username);
-    
     const deleteDate = {
         _id : parseInt( req.body._id ),
         username : ObjectId( req.body.username )
