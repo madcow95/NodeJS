@@ -36,26 +36,38 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 } );
 
 
-app.get( "/", ( req, res ) => {
-    res.render( `${ mainDir }/index.ejs` );
+app.get( "/", loginCheck, ( req, res ) => {
+    if( req.user ) {
+        res.render( `${ mainDir }/index.ejs`, { user : req.user } );
+    } else {
+        res.render( `${ mainDir }/index.ejs`, { user : null } );
+    }
 } );
 
-app.get( "/write", ( req, res ) => {
-    res.render( `${ mainDir }/write.ejs` );
+app.get( "/write", loginCheck, ( req, res ) => {
+    if( req.user ) {
+        res.render( `${ mainDir }/write.ejs`, { user : req.user } );
+    } else {
+        res.render( `${ mainDir }/write.ejs`, { user : null } );
+    }
 } )
 
-app.get( "/list", ( req, res ) => {
+app.get( "/list", loginCheck, ( req, res ) => {
     db.collection( "post" ).find().toArray( ( err, result ) => {
-        res.render( "list.ejs", { results : result } );
+        if( req.user ) {
+            res.render( `${ mainDir }/list.ejs`, { user : req.user, results : result } );
+        } else {
+            res.render( `${ mainDir }/list.ejs`, { user : null, results : result } );
+        }
     } );
 } );
 
-app.get( "/login", ( req, res ) => {
-    res.render( `${ mainDir }/login.ejs` );
+app.get( "/login", loginCheck, ( req, res ) => {
+    res.render( `${ mainDir }/login.ejs`, { user : null } );
 } );
 
-app.get( "/signUp", ( req, res ) => {
-    res.render( `${ mainDir }/signup.ejs` );
+app.get( "/signUp", loginCheck, ( req, res ) => {
+    res.render( `${ mainDir }/signup.ejs`, { user : null } );
 } );
 
 app.post( "/login", passport.authenticate( "local", {
@@ -112,7 +124,7 @@ function loginCheck( req, res, next ) {
     if( req.user ) {
         next();
     } else {
-        res.send( "Not Login Yet" );
+        next();
     }
 }
 

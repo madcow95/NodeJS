@@ -8,7 +8,11 @@
   <body>
     <%- include( './component/header.ejs' ) %>
     <div class="container mt-5">
-      <h1 class="text-center">메인 화면</h1>
+      <% if( user ) {%>
+        <h1 class="text-center"><%= user.username %> : 로그인 된 메인 화면</h1>
+      <% } else { %>
+        <h1 class="text-center">로그인 안 된 메인 화면</h1>
+      <% } %>
     </div>
   </body>
 </html>

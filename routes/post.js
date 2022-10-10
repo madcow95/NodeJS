@@ -37,7 +37,11 @@
             db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
                 if( err ) console.log(err);
                 db.collection( "post" ).find().toArray( ( err, result ) => {
-                    res.render( "list.ejs", { results : result } );
+                    if( req.user ) {
+                        res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
+                    } else {
+                        res.render( `${ ViewDir }/list.ejs`, { user : null, results : result } );
+                    }
                 } );
             } );
         } );

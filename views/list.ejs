@@ -23,7 +23,11 @@
               <p>글 번호 : <%= i %></p>
               <a href="/post/detail/<%= res._id %>"><h4>할 일 : <%= res.subject %></h4></a>
               <p>기간 : <%= res.content %></p>
-              <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>` )">삭제</button>
+              <% if( user ) { %>
+                <% if( user._id.toString() == res.username.toString() ) { %>
+                  <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>` )">삭제</button>
+                <% } %>
+              <% } %>
             </div>
             <!-- <span class="badge bg-primary rounded-pill"></span> ==> 나중에 댓글 갯수 넣을예정 -->
           </li>
