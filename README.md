@@ -63,4 +63,6 @@ NodeJS : 16.17.0
 <img width="200" alt="image" src="https://user-images.githubusercontent.com/78129823/194882544-f25e54ed-0956-4255-8e94-e7cc6c0e974d.png">
 <img width="200" alt="image" src="https://user-images.githubusercontent.com/78129823/194882666-1f862de5-19b4-4ce2-9e37-d32d9677e162.png">
 
+## 22/10/11
+### 1. module을 이용해서 그동안 server.js에 쌓였던 코드들을 post.js, member.js로 옮김.
 
