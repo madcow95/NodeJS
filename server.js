@@ -23,6 +23,7 @@ app.use( passport.session() );
 
 // '/'경로로 요청했을 때 이 미들웨어를 적용해주라.
 app.use( "/post", require( "./routes/post.js" ) );
+app.use( "/member", require( "./routes/member.js" ) );
 
 let db;
 
@@ -143,23 +144,6 @@ passport.deserializeUser( ( username, done ) => {
     db.collection( "member" ).findOne( { username : username }, ( err, res ) => {
         done( null, res );
     } );
-} );
-
-app.post( "/register", ( req, res ) => {
-    const username = req.body.username;
-    const userData = {
-        username : username,
-        password : req.body.password
-    }
-    db.collection( "member" ).findOne( { username : username }, ( joinCheckErr, joinCheckRes ) => {
-        if( joinCheckRes ) {
-            res.redirect( "/login" );
-            return;
-        }
-        db.collection( "member" ).insertOne( userData, ( registerErr, registerRes ) => {
-            res.redirect( "/" );
-        } );
-    } )
 } );
 
 app.get( "/upload", ( req, res ) => {

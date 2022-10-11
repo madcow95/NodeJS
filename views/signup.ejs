@@ -16,7 +16,7 @@
 </head>
 <body style="background-color: #f5f6f7;">
     <%- include( "./component/header.ejs" ) %>
-    <form class="container mt-5 col-md-6" style="border: solid black 2px; border-radius: 15px;" action="/register" method="POST">
+    <form class="container mt-5 col-md-6" style="border: solid black 2px; border-radius: 15px;" action="/member/register" method="POST">
         <div class="mt-4 mb-4">
             <div class="mb-3">
                 <label class="form-label">아이디</label>
@@ -24,27 +24,27 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">비밀번호</label>
-                <input type="password" class="form-control" name="passowrd">
+                <input type="password" class="form-control" name="password">
             </div>
             <div class="mb-3">
                 <label class="form-label">이메일</label>
                 <div class="row">
                     <div class="col">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="firstEmail">
                     </div>
                     <div class="mt-2">@</div>
                     <div class="col">
-                        <select class="form-control mb-3">
+                        <select class="form-control mb-3" name="secondEmail">
                             <option selected>-이메일 선택-</option>
-                            <option value="naver">naver.com</option>
-                            <option value="google">gmail.com</option>
-                            <option value="hanmail">hanmail.net</option>
+                            <option value="naver.com">naver.com</option>
+                            <option value="google.com">gmail.com</option>
+                            <option value="hanmail.net">hanmail.net</option>
                         </select>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="submit" class="btn btn-danger">Cancel</button>
+            <button type="submit" class="btn btn-primary">회원가입</button>
+            <button type="button" class="btn btn-danger" onclick="location.href = '/' ">취소</button>
         </div>
     </form>
 </body>

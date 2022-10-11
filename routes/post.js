@@ -18,35 +18,35 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 } );
  
 router.post( "/add", ( req, res ) => {
-db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
-    const totalPostCount = findRes.totalCount + 1;
-    const saveData = {
-        _id : totalPostCount,
-        subject : req.body.subject,
-        content : req.body.content
-    }
-    // 나중에 로그인 세션 만료 됐을 때 err msg return방법으로 전환
-    if( req.user ) {
-        saveData.username = req.user._id;
-    }
-    db.collection( "post" ).insertOne( saveData, ( err ) => {
-        if( err ) console.log(err);
-        /**
-         * $set : 값을 변경할 때
-         * $inc : 기존에 입력된 값에 더할 때 (auto increasement와 비슷한듯)
-         */
-        db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
+    db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
+        const totalPostCount = findRes.totalCount + 1;
+        const saveData = {
+            _id : totalPostCount,
+            subject : req.body.subject,
+            content : req.body.content
+        }
+        // 나중에 로그인 세션 만료 됐을 때 err msg return방법으로 전환
+        if( req.user ) {
+            saveData.username = req.user._id;
+        }
+        db.collection( "post" ).insertOne( saveData, ( err ) => {
             if( err ) console.log(err);
-            db.collection( "post" ).find().toArray( ( err, result ) => {
-                if( req.user ) {
-                    res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
-                } else {
-                    res.render( `${ ViewDir }/list.ejs`, { user : null, results : result } );
-                }
+            /**
+             * $set : 값을 변경할 때
+             * $inc : 기존에 입력된 값에 더할 때 (auto increasement와 비슷한듯)
+             */
+            db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
+                if( err ) console.log(err);
+                db.collection( "post" ).find().toArray( ( err, result ) => {
+                    if( req.user ) {
+                        res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
+                    } else {
+                        res.render( `${ ViewDir }/list.ejs`, { user : null, results : result } );
+                    }
+                } );
             } );
         } );
     } );
-} );
 } );
 
 router.get( "/detail/:id", ( req, res ) => {
