@@ -5,8 +5,8 @@ const MethodOverride    = require( "method-override" );
 const passport          = require( "passport" );
 const localStrategy     = require( "passport-local" ).Strategy;
 const session           = require( "express-session" );
-// file upload를 위한 미들웨어
 const multer            = require( "multer" );
+const CommonUtil        = require( "./util/common.js" );
 
 const mainDir           = `${ __dirname }/views`;
 const app               = express();

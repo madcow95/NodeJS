@@ -118,6 +118,6 @@ router.get( "/search", ( req, res ) => {
     } );
 } );
  
-// 다른곳에서 post.js를 사용하기 위해 export
+ // 다른곳에서 post.js를 사용하기 위해 export
 module.exports = router;
  
