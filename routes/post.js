@@ -4,10 +4,13 @@
 const MongoClient   = require( "mongodb" ).MongoClient;
 const multer        = require( "multer" );
 const { ObjectId }  = require( "mongodb" );
+const CommonUtil    = require( "../util/common.js" );
 
 let router          = require( "express" ).Router();
 let path            = require( "path" );
-let ViewDir         = `${ path.dirname( module.parent.filename ) }/views`;
+
+const ViewDir       = `${ path.dirname( module.parent.filename ) }/views`;
+
 let db;
  
 MongoClient.connect( process.env.DB_URL, ( err, client ) => {
@@ -35,6 +38,7 @@ const FileUpload = multer( { storage : storage } );
 
 router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
     db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
+
         const totalPostCount = findRes.totalCount + 1;
         const saveData = {
             _id : totalPostCount,
@@ -45,6 +49,7 @@ router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
         if( req.file ) {
             saveData.fileName = req.file.originalname;
         }
+
         db.collection( "post" ).insertOne( saveData, ( err ) => {
             if( err ) console.log(err);
             /**
@@ -53,6 +58,7 @@ router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
              */
             db.collection( "counter" ).updateOne( { name : "totalCount" }, { $inc : { totalCount : 1 } }, ( err ) => {
                 if( err ) console.log(err);
+
                 db.collection( "post" ).find().toArray( ( err, result ) => {
                     if( req.user ) {
                         res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
@@ -67,6 +73,7 @@ router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
 
 router.get( "/detail/:id", ( req, res ) => {
     db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
+
         if( req.user ) {
             res.render( "detail.ejs", { searchData : searchRes, user : req.user } );
         } else {
@@ -139,6 +146,7 @@ router.get( "/search", ( req, res ) => {
 } );
 
 router.get( "/getImage/:imageName", ( req, res ) => {
+    console.log("test",req.params.imageName);
     res.sendFile( `${ path.dirname( module.parent.filename ) }/public/image/${ req.params.imageName }` );
 } );
  
