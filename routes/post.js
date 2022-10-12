@@ -2,6 +2,7 @@
  * npm으로 설치했던 라이브러리를 사용합니당 이라는 뜻
  */
 const MongoClient   = require( "mongodb" ).MongoClient;
+const multer        = require( "multer" );
 const { ObjectId }  = require( "mongodb" );
 
 let router          = require( "express" ).Router();
@@ -16,18 +17,33 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 
     db = client.db( "todoapp" );
 } );
- 
-router.post( "/add", ( req, res ) => {
+
+const storage = multer.diskStorage( {
+    destination : ( req, file, cb ) => {
+        cb( null, "./public/image" );
+    },
+    filename : ( req, file, cb ) => {
+        cb( null, file.originalname );
+    }
+    //,
+    // filefilter : ( req, file, cb ) => {
+    //     cb( null  )
+    // }
+} ); // disk에 저장, memoryStorage : memory에 저장
+
+const FileUpload = multer( { storage : storage } );
+
+router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
     db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
         const totalPostCount = findRes.totalCount + 1;
         const saveData = {
             _id : totalPostCount,
             subject : req.body.subject,
-            content : req.body.content
+            content : req.body.content,
+            username: req.user._id
         }
-        // 나중에 로그인 세션 만료 됐을 때 err msg return방법으로 전환
-        if( req.user ) {
-            saveData.username = req.user._id;
+        if( req.file ) {
+            saveData.fileName = req.file.originalname;
         }
         db.collection( "post" ).insertOne( saveData, ( err ) => {
             if( err ) console.log(err);
@@ -51,7 +67,11 @@ router.post( "/add", ( req, res ) => {
 
 router.get( "/detail/:id", ( req, res ) => {
     db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
-        res.render( "detail.ejs", { searchData : searchRes } );
+        if( req.user ) {
+            res.render( "detail.ejs", { searchData : searchRes, user : req.user } );
+        } else {
+            res.render( "detail.ejs", { searchData : searchRes, user : null } );
+        }
     } );
 } );
  
@@ -61,7 +81,7 @@ router.put( "/edit", ( req, res ) => {
      * form에 입력된 값들이 db.collection에 업데이트
      */
     db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
-                                    { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
+                                       { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
         if( err ) console.log(err);
         res.render( "detail.ejs", { searchData : req.body } );
     } );
@@ -116,6 +136,10 @@ router.get( "/search", ( req, res ) => {
     db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
         res.render( "list.ejs", { results : searchRes } );
     } );
+} );
+
+router.get( "/getImage/:imageName", ( req, res ) => {
+    res.sendFile( `${ path.dirname( module.parent.filename ) }/public/image/${ req.params.imageName }` );
 } );
  
  // 다른곳에서 post.js를 사용하기 위해 export

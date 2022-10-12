@@ -8,31 +8,35 @@
   <body>
       <%- include( './component/header.ejs' ) %>
       <div class="container mt-5">
-        <form action="/edit?_method=PUT" method="POST" id="form">
-          <div class="card mb-3" style="max-width: 1080px; height: 540px;">
-              <div class="row g-0">
-                <div class="col-md-4">
-                  <img class="img-fluid rounded-start" alt="...">
-                </div>
-                <div class="col-md-8">
-                  <div class="card-body">
-                    <input type="hidden" id="postId" name="postId" value="<%= searchData._id %>">
-                    <h5 class="card-title">제목 : <input type="text" disabled value="<%= searchData.subject %>" id="subject" name="subject"></h5>
-                    <p class="card-text">내용 : <input type="text" disabled value="<%= searchData.content %>" id="content" name="content"></p>
-                    <p class="card-text"><small class="text-muted">게시글 상세보기 페이지임.</small></p>
+        <div class="container card mb-3" style="max-width: 1080px; height: 540px;">
+          <div class="container row g-0">
+            <div class="container col-md-8">
+              <form action="/edit?_method=PUT" method="POST" id="form">
+                <div class="container card-body">
+                  <input type="hidden" id="postId" name="postId" value="<%= searchData._id %>">
+                  <div class="input-group input-group-sm mb-3">
+                    <p class="card-title">제목 : </p>&nbsp;&nbsp;<input type="text" class="form-control" disabled value="<%= searchData.subject %>" id="subject" name="subject">
                   </div>
+                  <div class="input-group input-group-sm mb-3">
+                    <p class="card-text">내용 : </p>&nbsp;&nbsp;<input type="text" class="form-control" disabled value="<%= searchData.content %>" id="content" name="content">
+                  </div>
+                  <small class="text-muted">게시글 상세보기 페이지임.</small>
                 </div>
+              </form>
+              <div class="container" style="width: 20rem; height: 20rem;">
+                <img src="/post/getImage/<%= searchData.fileName %>" class="card-img-top">
               </div>
+            </div>
           </div>
-          <div class="row justify-content-center">
-              <div class="d-grid gap-2 d-md-block">
-                  <button class="btn btn-outline-dark">Back</button>
-                  <button class="btn btn-primary" type="button" id="modifyActive">Modify</button>
-                  <button class="btn btn-primary" type="button" id="modifyComp" style="display: none;">Modify Comp</button>
-                  <button class="btn btn-danger" type="button">Delete</button>
-              </div>
-          </div>
-        </form>
+        </div>
+        <div class="row justify-content-center">
+            <div class="d-grid gap-2 d-md-block">
+                <button class="btn btn-outline-dark">Back</button>
+                <button class="btn btn-primary" type="button" id="modifyActive">Modify</button>
+                <button class="btn btn-primary" type="button" id="modifyComp" style="display: none;">Modify Comp</button>
+                <button class="btn btn-danger" type="button">Delete</button>
+            </div>
+        </div>
       </div>
   </body>
   <script>
