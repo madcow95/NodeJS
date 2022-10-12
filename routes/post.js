@@ -146,7 +146,6 @@ router.get( "/search", ( req, res ) => {
 } );
 
 router.get( "/getImage/:imageName", ( req, res ) => {
-    console.log("test",req.params.imageName);
     res.sendFile( `${ path.dirname( module.parent.filename ) }/public/image/${ req.params.imageName }` );
 } );
  
