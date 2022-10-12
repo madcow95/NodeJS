@@ -44,10 +44,8 @@ router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
             _id : totalPostCount,
             subject : req.body.subject,
             content : req.body.content,
-            username: req.user._id
-        }
-        if( req.file ) {
-            saveData.fileName = req.file.originalname;
+            username: req.user._id,
+            fileName: req.file ? req.file.originalname : "default.jpg"
         }
 
         db.collection( "post" ).insertOne( saveData, ( err ) => {
