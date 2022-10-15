@@ -20,8 +20,8 @@
           <tr>
             <th scope="col">글 번호</th>
             <th scope="col">제목</th>
-            <th scope="col">등록일</th>
             <th scope="col">작성자</th>
+            <th scope="col">등록일</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -30,8 +30,8 @@
               <tr>
                 <td><%= i %></td>
                 <td><a href="/post/detail/<%= res._id %>"><%= res.subject %></a></td>
-                <td><%= res.addDate %></td>
                 <td><%= res.username %></td>
+                <td><%= res.addDate %></td>
               </tr>
             <% i++; } %>
         </tbody>
@@ -61,7 +61,7 @@
           </li>
         <%  i++; } %>
       </ol> -->
-      <!-- <div class="container row justify-content-center mt-3">
+      <div class="container row justify-content-center mt-3">
         <nav aria-label="Page navigation example">
           <ul class="pagination">
             <li class="page-item">
@@ -79,7 +79,7 @@
             </li>
           </ul>
         </nav>
-      </div> -->
+      </div>
     </div>
   </body>
   <script>
