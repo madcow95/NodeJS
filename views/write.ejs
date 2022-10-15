@@ -9,7 +9,7 @@
     <%- include( './component/header.ejs' ) %>
 
     <div class="container mt-5">
-        <form action="/post/add" method="POST" enctype="multipart/form-data">
+        <form action="/post/add" method="POST" enctype="multipart/form-data" id="postForm">
             <div class="form-group">
               <label>제목</label>
               <input type="text" class="form-control" name="subject">
@@ -21,10 +21,17 @@
             <div class="form-group">
                 <input type="file" name="FileName">
             </div>
-            <div class="form-group form-check">
-            </div>
-            <button type="submit" class="btn btn-primary">작성</button>
+            <input type="hidden" name="addDate" id="addDate" readonly>
+            <button type="button" class="btn btn-primary" onclick="submitBtn()">작성</button>
         </form>
     </div>
+    <script>
+        const submitBtn = () => {
+            const currentDate = new Date();
+            const currentDateDetail = `${ currentDate.getFullYear() }.${ currentDate.getMonth() + 1 }.${ currentDate.getDate() } ${ currentDate.getHours() }:${ currentDate.getMinutes() }:${ currentDate.getSeconds() }`
+            $( "#addDate" ).val( currentDateDetail );
+            $( "#postForm" ).submit();
+        }
+    </script>
 </body>
 </html>
