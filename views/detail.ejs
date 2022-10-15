@@ -11,17 +11,21 @@
         <div class="container card mb-3" style="max-width: 1080px; height: 540px;">
           <div class="container row g-0">
             <div class="container col-md-8">
-              <form action="/edit?_method=PUT" method="POST" id="form">
+              <form action="/post/edit?_method=PUT" method="POST" id="form">
                 <div class="container card-body">
                   <input type="hidden" id="postId" name="postId" value="<%= searchData._id %>">
                   <div class="input-group input-group-sm mb-3">
-                    <p class="card-title">제목 : </p>&nbsp;&nbsp;<input type="text" class="form-control" disabled value="<%= searchData.subject %>" id="subject" name="subject">
+                    <p class="card-title">작성자 : </p>&nbsp;&nbsp;<input type="text" class="form-control" readonly value="<%= searchData.username %>" id="username" name="username">
                   </div>
                   <div class="input-group input-group-sm mb-3">
-                    <p class="card-text">내용 : </p>&nbsp;&nbsp;<input type="text" class="form-control" disabled value="<%= searchData.content %>" id="content" name="content">
+                    <p class="card-title mr-2">제목 &nbsp;: </p>&nbsp;&nbsp;<input type="text" class="form-control" disabled value="<%= searchData.subject %>" id="subject" name="subject">
+                  </div>
+                  <div class="input-group input-group-sm mb-3">
+                    <p class="card-text mr-2">내용 &nbsp;: </p>&nbsp;&nbsp;<input type="text" class="form-control" disabled value="<%= searchData.content %>" id="content" name="content">
                   </div>
                   <small class="text-muted">게시글 상세보기 페이지임.</small>
                 </div>
+                <input type="hidden" value="<%= searchData.fileName %>" name="fileName">
               </form>
               <div class="container" style="width: 20rem; height: 20rem;">
                 <img src="/post/getImage/<%= searchData.fileName %>" class="card-img-top">
@@ -31,10 +35,14 @@
         </div>
         <div class="row justify-content-center">
             <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-outline-dark">Back</button>
-                <button class="btn btn-primary" type="button" id="modifyActive">Modify</button>
-                <button class="btn btn-primary" type="button" id="modifyComp" style="display: none;">Modify Comp</button>
-                <button class="btn btn-danger" type="button">Delete</button>
+                <button class="btn btn-outline-dark" onclick="location.replace( '/list' )">취소</button>
+                <% if( user ) { %>
+                  <% if( user.username == searchData.username ) { %>
+                    <button class="btn btn-primary" type="button" id="modifyActive">수정</button>
+                    <button class="btn btn-primary" type="button" id="modifyComp" style="display: none;">수정 완료</button>
+                    <button class="btn btn-danger" type="button" onclick="deleteBtn( `<%= searchData._id %>`, `<%= searchData.username %>` )">삭제</button>
+                  <% } %>
+                <% } %>
             </div>
         </div>
       </div>
@@ -54,5 +62,22 @@
 
       $( "#form" ).submit();
     } );
+
+    const deleteBtn = ( postNum, userId ) => {
+      $.ajax( 
+        {
+          method : "DELETE",
+          url    : "/post/delete",
+          data   : {
+            _id  : postNum,
+            username : userId
+          }
+        }
+       ).done( ( res ) => {
+        location.replace( "/list" );
+       } ).fail( ( xhr, textStatus, errorThrown ) => {
+        console.log(xhr, textStatus, errorThrown);
+       } );
+    }
   </script>
 </html>

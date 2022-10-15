@@ -38,14 +38,14 @@ const FileUpload = multer( { storage : storage } );
 
 router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
     db.collection( "counter" ).findOne( { name : "totalCount" }, ( err, findRes ) => {
-
         const totalPostCount = findRes.totalCount + 1;
         const saveData = {
             _id : totalPostCount,
             subject : req.body.subject,
             content : req.body.content,
-            username: req.user._id,
-            fileName: req.file ? req.file.originalname : "default.jpg"
+            username: req.user.username,
+            fileName: req.file ? req.file.originalname : "default.jpg",
+            addDate : CommonUtil.currnetDate
         }
 
         db.collection( "post" ).insertOne( saveData, ( err ) => {
@@ -88,14 +88,18 @@ router.put( "/edit", ( req, res ) => {
     db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
                                        { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
         if( err ) console.log(err);
-        res.render( "detail.ejs", { searchData : req.body } );
+        if( req.user ) {
+            res.render( "detail.ejs", { searchData : req.body, user : req.user } );
+        } else {
+            res.render( "detail.ejs", { searchData : req.body, user : null } );
+        }
     } );
 } );
  
 router.delete( "/delete", ( req, res ) => {
     const deleteDate = {
         _id : parseInt( req.body._id ),
-        username : ObjectId( req.body.username )
+        username : req.body.username
     }
     db.collection( "post" ).deleteOne( deleteDate, ( err ) => {
         if( err ) console.log( err );
@@ -105,6 +109,7 @@ router.delete( "/delete", ( req, res ) => {
  
 router.get( "/search", ( req, res ) => {
     const searchStr = req.query.value;
+    console.log(searchStr);
      /**
       * 그냥 find로 찾는건 하나하나 검색하기 때문에 오래걸림 -> indexing이용해서 검색 => 업다운 게임같이 검색을 해서 빠르게 찾을 수 있음(대신 sort가 잘 되어있어야됨).
       * indexing search -> 빠른 검색, or 조건으로 검색, -검색어 : 해당 단어 제외 검색, "검색어" : 정확히 일치하는 단어만 검색
@@ -139,7 +144,13 @@ router.get( "/search", ( req, res ) => {
         }
     ];
     db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
-        res.render( "list.ejs", { results : searchRes } );
+        if( err ) console.log(err);
+        console.log({searchRes});
+        if( req.user ) {
+            res.render( "list.ejs", { results : searchRes, user : req.user } );
+        } else {
+            res.render( "list.ejs", { results : searchRes, user : null } );
+        }
     } );
 } );
 
