@@ -1,4 +1,5 @@
 const MongoClient   = require( "mongodb" ).MongoClient;
+const crypto        = require( "crypto" );
 const { ObjectId }  = require( "mongodb" );
 
 let router          = require( "express" ).Router();
@@ -15,6 +16,8 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 } );
   
 router.post( "/register", ( req, res ) => {
+    // const cryptPwd = _getCryptoPassword(req.body.password);
+    // console.log(cryptPwd);
     const username = req.body.username;
     const userData = {
         username : username,
@@ -28,6 +31,29 @@ router.post( "/register", ( req, res ) => {
         db.collection( "member" ).insertOne( userData, ( registerErr, registerRes ) => {
             res.redirect( "/" );
         } );
+    } );
+} );
+
+const _getCryptoPassword = ( pwd ) => {
+    crypto.randomBytes( 64, ( err, buf ) => {
+        crypto.pbkdf2( pwd, buf.toString( 'base64' ), 100000, 64, 'sha512', ( err, key ) => {
+            return key.toString( 'base64' );
+        } );
+    } );
+}
+
+router.post( "/loginCheck", ( req, res ) => {
+    const searchMember = {
+        username : req.body.username,
+        password : req.body.password
+    }
+    db.collection( "member" ).findOne( searchMember, ( searchErr, searchRes ) => {
+        if( searchErr ) console.log(searchErr);
+        let resultRes = undefined;
+        if( searchRes ) {
+            resultRes = "UserExist";
+        }
+        res.status( 200 ).send( resultRes );
     } );
 } );
  

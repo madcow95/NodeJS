@@ -1,102 +1,94 @@
 <!doctype html>
 <html">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Hello, world!</title>
-  </head>
-  <body>
-    <%- include( './component/header.ejs' ) %>
-    <div class="container mt-5">
 
-      <h4 class="ml-2 my-3 text-center">글 리스트들</h4>
-      <div class="container input-group mb-2">
-        <input class="form-control" id="searchStr">
-        <button class="input-group-append btn btn-danger" onclick="searchBtn()">검색</button>
-      </div>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Hello, world!</title>
+    </head>
 
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">글 번호</th>
-            <th scope="col">제목</th>
-            <th scope="col">작성자</th>
-            <th scope="col">등록일</th>
-          </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          <% var i = 1; %>
-            <% for( const res of results ) { %>
-              <tr>
-                <td><%= i %></td>
-                <td><a href="/post/detail/<%= res._id %>"><%= res.subject %></a></td>
-                <td><%= res.username %></td>
-                <td><%= res.addDate %></td>
-              </tr>
-            <% i++; } %>
-        </tbody>
-      </table>
-      <div class="mb-2">
-        <% if( user ) { %>
-          <button class="input-group-append btn btn-primary" style="float: right;" onclick="location.replace( '/write' )">글 작성</button>
-        <% } %>
-      </div>
+    <body>
+        <%- include( './component/header.ejs' ) %>
+        <div class="container mt-5">
 
-
-      <!-- <ol class="list-group list-group-numbered">
-        <% var i = 1; %>
-        <% for( const res of results ) { %>
-          <li class="list-group-item d-flex justify-content-between align-items-start">
-            <div class="ms-2 me-auto">
-              <p>글 번호 : <%= i %></p>
-              <a href="/post/detail/<%= res._id %>"><h4>할 일 : <%= res.subject %></h4></a>
-              <p>기간 : <%= res.content %></p>
-              <% if( user ) { %>
-                <% if( user._id.toString() == res.username.toString() ) { %>
-                  <button type="button" class="btn btn-danger" onclick="deleteBtn( `<%= res._id %>`, `<%= user._id %>` )">삭제</button>
-                <% } %>
-              <% } %>
+            <h4 class="ml-2 my-3 text-center">글 리스트들</h4>
+            <div class="container input-group mb-2">
+                <input class="form-control" id="searchStr">
+                <button class="input-group-append btn btn-danger" onclick="searchBtn()">검색</button>
             </div>
-            <span class="badge bg-primary rounded-pill"></span> ==> 나중에 댓글 갯수 넣을예정
-          </li>
-        <%  i++; } %>
-      </ol> -->
-      <div class="container row justify-content-center mt-3">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination">
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-  </body>
-  <script>
-    const searchBtn = () => {
-      const searchValue = $( "#searchStr" ).val();
-      if( searchValue ) {
-        window.location.replace( `/post/search?value=${ $( "#searchStr" ).val() }` );
-      } else {
-        location.replace( "/list" );
-      }
-    }
 
-    /**
-     * $.param : 안에 Object형 => { searchStr1 : str1, searchstr2 : str2 } 을 넣어주면 parameter형태로 변환
-     * $(form).serialize() => form Tag안의 input Tag에 name을 기준으로 데이터를 모아서 parameter형태로 변환
-     * $.param( new Object() );
-     * $("form").serialize();
-     */
-  </script>
-</html>
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">글 번호</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">작성자</th>
+                    <th scope="col">등록일</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                  <% var i=1; %>
+                    <% for( const res of results ) { %>
+                      <tr>
+                        <td>
+                          <%= i %>
+                        </td>
+                        <td><a href="/post/detail/<%= res._id %>">
+                            <%= res.subject %>
+                          </a></td>
+                        <td>
+                          <%= res.username %>
+                        </td>
+                        <td>
+                          <%= res.addDate %>
+                        </td>
+                      </tr>
+                      <% i++; } %>
+                </tbody>
+            </table>
+            <div class="mb-2">
+              <% if( user ) { %>
+                <button class="input-group-append btn btn-primary" style="float: right;"
+                  onclick="location.replace( '/write' )">글 작성</button>
+                <% } %>
+            </div>
+            <div class="container row justify-content-center mt-3">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </body>
+    <script>
+        const searchBtn = () => {
+            const searchValue = $( "#searchStr" ).val();
+            if ( searchValue ) {
+                window.location.replace( `/post/search?value=${ $( "#searchStr" ).val() }` );
+            } else {
+                location.replace( "/list" );
+            }
+        }
+
+      /**
+       * $.param : 안에 Object형 => { searchStr1 : str1, searchstr2 : str2 } 을 넣어주면 parameter형태로 변환
+       * $(form).serialize() => form Tag안의 input Tag에 name을 기준으로 데이터를 모아서 parameter형태로 변환
+       * $.param( new Object() );
+       * $("form").serialize();
+       */
+    </script>
+
+  </html>

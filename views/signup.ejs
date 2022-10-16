@@ -1,55 +1,76 @@
 <html lang="ko">
-<head>
-    <style>
-        select{
-            width:85px;
-            height:25px;
-            outline: none;
-            background: #f5f6f7;
-            border: 1px solid #999;
-        }
-    </style>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입</title>
-</head>
-<body style="background-color: #f5f6f7;">
-    <%- include( "./component/header.ejs" ) %>
-    <form class="container mt-5 col-md-6" style="border: solid black 2px; border-radius: 15px;" action="/member/register" method="POST">
-        <div class="mt-4 mb-4">
-            <div class="mb-3">
-                <label class="form-label">아이디</label>
-                <input type="text" class="form-control" name="username">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">비밀번호</label>
-                <input type="password" class="form-control" name="password">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">이름</label>
-                <input type="text" class="form-control" name="personName">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">이메일</label>
-                <div class="row">
-                    <div class="col">
-                        <input type="text" class="form-control" name="firstEmail">
-                    </div>
-                    <div class="mt-2">@</div>
-                    <div class="col">
-                        <select class="form-control mb-3" name="secondEmail">
-                            <option selected>-이메일 선택-</option>
-                            <option value="naver.com">naver.com</option>
-                            <option value="google.com">gmail.com</option>
-                            <option value="hanmail.net">hanmail.net</option>
-                        </select>
+    <head>
+        <style>
+            select{
+                width:85px;
+                height:25px;
+                outline: none;
+                background: #f5f6f7;
+                border: 1px solid #999;
+            }
+        </style>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>회원가입</title>
+    </head>
+    <body style="background-color: #f5f6f7;">
+        <%- include( "./component/header.ejs" ) %>
+        <form class="container mt-5 col-md-6" id="signUpForm" style="border: solid black 2px; border-radius: 15px;" action="/member/register" method="POST">
+            <div class="mt-4 mb-4">
+                <div class="mb-3">
+                    <label class="form-label">아이디</label>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="아이디">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="비밀번호">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">이름</label>
+                    <input type="text" class="form-control" name="personName" id="personName" placeholder="이름">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">이메일</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" class="form-control" name="firstEmail" id="firstEmail" placeholder="이메일">
+                        </div>
+                        <div class="mt-2">@</div>
+                        <div class="col">
+                            <select class="form-control mb-3" name="secondEmail" id="secondEmail">
+                                <option selected>-이메일 선택-</option>
+                                <option value="naver.com">naver.com</option>
+                                <option value="google.com">gmail.com</option>
+                                <option value="hanmail.net">hanmail.net</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+                <button type="button" class="btn btn-primary" onclick="signUp()">회원가입</button>
+                <button type="button" class="btn btn-danger" onclick="location.href = '/' ">취소</button>
             </div>
-            <button type="submit" class="btn btn-primary">회원가입</button>
-            <button type="button" class="btn btn-danger" onclick="location.href = '/' ">취소</button>
-        </div>
-    </form>
-</body>
+        </form>
+    </body>
+    <script>
+        const signUp = () => {
+            const emptyFilter = [ "username", "password", "personName", "firstEmail" ].map( prop => { 
+                if( !$( `#${ prop }` ).val() ) {
+                    return $( `#${ prop }` )[0].placeholder;
+                }
+            } ).filter( ele => ele !== undefined );
+            
+            if( emptyFilter.length > 0 ) {
+                alert( `${ emptyFilter.toString() }을 입력해주세요.` );
+                return;
+            }
+
+            if( $( "#secondEmail" ).val().includes( "이메일 선택" ) ) {
+                alert( "이메일을 선택해주세요." );
+                return;
+            }
+
+            $( "#signUpForm" ).submit();
+        }
+    </script>
 </html>

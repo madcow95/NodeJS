@@ -1,29 +1,65 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body style="background-color: #f5f6f7;">
     <%- include( './component/header.ejs' ) %>
 
-    <div class="container mt-5">
-        <form class="container mt-5 col-md-6" action="/login" method="POST" style="border: solid black 2px; border-radius: 15px;">
-          <div class="mt-4 mb-4">
-            <div class="mb-3">
-                <label class="form-label">아이디</label>
-                <input type="text" class="form-control" name="username">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">비밀번호</label>
-                <input type="password" class="form-control" name="password">
-            </div>
-            <a class="text-black-50 mt-1" style="float: right; cursor: pointer;">아이디/비밀번호 찾기</a>
-            <button type="submit" class="btn btn-primary">로그인</button>
-            <button type="button" class="btn btn-waring" onclick="location.href = '/signUp' ">회원가입</button>
-          </div>
-        </form>
-    </div>
+        <div class="container mt-5">
+            <form class="container mt-5 col-md-6" action="/login" method="POST" id="loginForm"
+                style="border: solid black 2px; border-radius: 15px;">
+                <div class="mt-4 mb-4">
+                    <div class="mb-3">
+                        <label class="form-label">아이디</label>
+                        <input type="text" class="form-control" name="username" id="username">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">비밀번호</label>
+                        <input type="password" class="form-control" name="password" id="password">
+                    </div>
+                    <a class="text-black-50 mt-1" style="float: right; cursor: pointer;">아이디/비밀번호 찾기</a>
+                    <button type="button" class="btn btn-primary" id="loginBtn" onclick="loginAction()">로그인</button>
+                    <button type="button" class="btn btn-waring" onclick="location.href = '/signUp' ">회원가입</button>
+                </div>
+            </form>
+        </div>
 </body>
+<script>
+    const loginAction = () => {
+        const validationProps = [ "username", "password" ];
+        const emptyCheck = validationProps.every( prop => $( `#${ prop }` ).val() );
+        if ( !emptyCheck ) {
+            alert( "아이디와 비밀번호를 모두 입력해주세요." );
+            return;
+        }
+        const username = $( "#username" ).val();
+        const password = $( "#password" ).val();
+        $.ajax(
+            {
+                method: "post",
+                url   : "/member/loginCheck",
+                data  : {
+                    username: username,
+                    password: password
+                },
+                success: ( res ) => {
+                    if ( !res ) {
+                        alert( "아이디와 비밀번호를 확인해주세요." );
+                        return;
+                    }
+                    $( "#loginForm" ).submit();
+                },
+                fail: ( err ) => {
+                    console.log( res );
+                }
+            }
+        )
+    }
+</script>
+
 </html>
