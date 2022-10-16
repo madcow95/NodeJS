@@ -113,7 +113,11 @@ passport.use( new localStrategy( {
  * mypage경로로 접속 했을 때 loginCheck를 실행시킴
  */
 app.get( "/mypage", loginCheck, ( req , res ) => {
-    res.render( "mypage.ejs", { user : req.user } );
+    if( req.user ) {
+        res.render( "mypage.ejs", { user : req.user } );
+    } else {
+        res.redirect( "/" );
+    }
 } );
 
 /**
