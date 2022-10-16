@@ -30,10 +30,18 @@
         </div>
 </body>
 <script>
+    $( document ).ready( () => {
+        this.addEventListener( 'keypress', ( e ) => {
+            if ( e.key === 'Enter' ) {
+                loginAction();
+            } else {
+                return;
+            }
+        });
+    } );
+
     const loginAction = () => {
-        const validationProps = [ "username", "password" ];
-        const emptyCheck = validationProps.every( prop => $( `#${ prop }` ).val() );
-        if ( !emptyCheck ) {
+        if ( ![ "username", "password" ].every( prop => $( `#${ prop }` ).val() ) ) {
             alert( "아이디와 비밀번호를 모두 입력해주세요." );
             return;
         }

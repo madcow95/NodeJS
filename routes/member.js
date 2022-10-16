@@ -48,12 +48,33 @@ router.post( "/loginCheck", ( req, res ) => {
         password : req.body.password
     }
     db.collection( "member" ).findOne( searchMember, ( searchErr, searchRes ) => {
-        if( searchErr ) console.log(searchErr);
         let resultRes = undefined;
         if( searchRes ) {
             resultRes = "UserExist";
         }
         res.status( 200 ).send( resultRes );
+    } );
+} );
+
+router.post( "/updatePwd", ( req, res ) => {
+    const username  = req.body.username;
+    const changePwd = req.body.password;
+    let returnData = {
+        status : 200,
+        msg    : undefined
+    }
+    db.collection( "member" ).updateOne( { username : username }, { $set : { password : changePwd } }, ( changeErr, changeRes ) => {
+        if( changeErr ) {
+            returnData.status = 400;
+            returnData.msg    = "changeErr";
+        }
+        db.collection( "member" ).findOne( { username : username }, ( searchErr, searchRes ) => {
+            if( searchErr ) {
+                returnData.status = 400;
+                returnData.msg    = "findErr";
+            }
+            res.status( returnData.status ).render( `mypage.ejs`, { user : searchRes, msg : returnData.msg } );
+        } );
     } );
 } );
  
