@@ -69,14 +69,36 @@ router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
     } );
 } );
 
+router.post( "/addReply", ( req, res ) => {
+    const replyData = {
+        replyWriter : req.body.replyWriter,
+        replyContent : req.body.replyContent,
+        postNum : parseInt( req.body.postNum )
+    }
+    db.collection( "postReply" ).insertOne( replyData, ( err ) => {
+        if( err ) console.log( err );
+        // db.collection( "post" ).findOne( { _id : req.body.postNum }, ( searchErr, searchRes ) => {
+        //     db.collection( "postReply" ).find( { postNum : searchRes._id } ).toArray( ( replyErr, replyRes ) => {
+        //         console.log(replyRes);
+        //         if( req.user ) {
+        //             res.render( "detail.ejs", { searchData : searchRes, user : req.user, replyInfo : replyRes } );
+        //         } else {
+        //             res.render( "detail.ejs", { searchData : searchRes, user : null, replyInfo : replyRes } );
+        //         }
+        //     } );
+        // } );
+    } );
+} );
+
 router.get( "/detail/:id", ( req, res ) => {
     db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
-
-        if( req.user ) {
-            res.render( "detail.ejs", { searchData : searchRes, user : req.user } );
-        } else {
-            res.render( "detail.ejs", { searchData : searchRes, user : null } );
-        }
+        db.collection( "postReply" ).find( { postNum : parseInt( searchRes._id ) } ).toArray( ( replyErr, replyRes ) => {
+            if( req.user ) {
+                res.render( "detail.ejs", { searchData : searchRes, user : req.user, replyInfo : replyRes } );
+            } else {
+                res.render( "detail.ejs", { searchData : searchRes, user : null, replyInfo : replyRes } );
+            }
+        } )
     } );
 } );
  
