@@ -77,6 +77,7 @@ router.post( "/addReply", ( req, res ) => {
     }
     db.collection( "postReply" ).insertOne( replyData, ( err ) => {
         if( err ) console.log( err );
+        res.status( 200 ).send( "write complete" );
         // db.collection( "post" ).findOne( { _id : req.body.postNum }, ( searchErr, searchRes ) => {
         //     db.collection( "postReply" ).find( { postNum : searchRes._id } ).toArray( ( replyErr, replyRes ) => {
         //         console.log(replyRes);
@@ -126,6 +127,22 @@ router.delete( "/delete", ( req, res ) => {
     db.collection( "post" ).deleteOne( deleteDate, ( err ) => {
         if( err ) console.log( err );
         res.status( 200 ).send( { msg : "삭제 성공" } );
+    } );
+} );
+
+router.delete( "/deleteReply", ( req, res ) => {
+    console.log(ObjectId(req.body.replyId));
+    db.collection( "postReply" ).deleteOne( { _id : ObjectId(req.body.replyId) }, ( err ) => {
+        let statusInfo = {
+            status : 200,
+            msg    : "delSuc"
+        };
+        if( err ) {
+            console.log(err);
+            statusInfo.status = 400;
+            statusInfo.msg    = "delFail"
+        }
+        res.status( statusInfo.status ).send( statusInfo.msg );
     } );
 } );
  

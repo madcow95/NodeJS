@@ -54,7 +54,10 @@
                         <div><%= reply.replyContent %></div>
                         <div class="d-flex">
                           <div class="font-italic mr-2">작성자 : <%= reply.replyWriter %></div>
-                          <button class="badge">삭제</button>
+                          <input type="hidden" class="form-control ml-2" id="replyWriter" value="<%= reply.replyWriter %>" readonly>
+                          <% if( user && reply.replyWriter == user.username ) { %>
+                            <button class="badge" onclick="replyDelete( `<%= reply._id %>` )">삭제</button>
+                          <% } %>
                         </div>
                       </li>
                     </ul>
@@ -62,27 +65,29 @@
               </div>
             </div>
         </div>
-        <div class="container w-50 h-40">
-          <div class="card mt-5 mb-2">
-            <div class="card-header bg-light">
-              <i class="fa fa-comment fa"></i> REPLY
-            </div>
-            <div class="card-body">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                  <div class="container">
-                    <div class="form-inline mb-2">
-                      <label for="replyId"><i class="fa fa-user-circle-o fa-2x"></i></label>
-                      <input type="text" class="form-control ml-2" id="replyId" value="<%= user.username %>" readonly>
+        <% if( user ) { %>
+          <div class="container w-50 h-40">
+            <div class="card mt-5 mb-2">
+              <div class="card-header bg-light">
+                <i class="fa fa-comment fa"></i> REPLY
+              </div>
+              <div class="card-body">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                    <div class="container">
+                      <div class="form-inline mb-2">
+                        <label for="replyId"><i class="fa fa-user-circle-o fa-2x"></i></label>
+                        <input type="hidden" class="form-control ml-2" id="replyId" value="<%= user.username %>" readonly>
+                      </div>
+                      <textarea class="form-control" id="replyAria" rows="2"></textarea>
                     </div>
-                    <textarea class="form-control" id="replyAria" rows="2"></textarea>
-                  </div>
-                  <button type="button" class="btn btn-dark mt-3" onClick="addReply( `<%= searchData._id %>`, `<%= user.username %>` )">post reply</button>
-                </li>
-              </ul>
+                    <button type="button" class="btn btn-dark mt-3" onClick="addReply( `<%= searchData._id %>` )">작성</button>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
+        <% } %>
       </div>
   </body>
   <script>
@@ -101,16 +106,19 @@
       $( "#form" ).submit();
     } );
 
-    const deleteBtn = ( postNum, userId ) => {
+    const deleteBtn = ( postNum, userInfo ) => {
       if( !confirm( "게시글을 삭제할까요?" ) ) return;
-      
+      if( !userInfo.username ) {
+        alert( "로그인 후 이용해주세요." );
+        return;
+      }
       $.ajax( 
         {
           method : "DELETE",
           url    : "/post/delete",
           data   : {
             _id  : postNum,
-            username : userId
+            username : userInfo.username
           }
         }
        ).done( ( res ) => {
@@ -120,8 +128,9 @@
        } );
     }
 
-    const addReply = ( postNum, writer ) => {
-      const replyText = $("#replyAria").val();
+    const addReply = ( postNum ) => {
+      const replyText = $( "#replyAria" ).val();
+      const userInfo = $( "#replyId" ).val();
       if( !replyText ) { 
         alert( "댓글을 입력해주세요." );
         return;
@@ -133,7 +142,7 @@
           url    : "/post/addReply",
           data   : {
             postNum : parseInt( postNum ),
-            replyWriter : writer,
+            replyWriter : userInfo,
             replyContent : replyText
           },
           success : ( res ) => {
@@ -142,6 +151,30 @@
           },
           fail : ( err ) => {
             console.log(res);
+          }
+        }
+      );
+    }
+
+    const replyDelete = ( replyId ) => {
+      $.ajax(
+        {
+          method : "DELETE",
+          url    : "/post/deleteReply",
+          data   : {
+            replyId : replyId
+          },
+          success : ( delRes ) => {
+            if( delRes == "delSuc" ) {
+              location.reload();
+            } else {
+              alert( "통신 중 에러가 발생했습니다. 잠시 후 다시 시도해주세요." );
+              return;
+            }
+          },
+          fail : () => {
+            alert( "통신 중 에러가 발생했습니다. 잠시 후 다시 시도해주세요." );
+            return;
           }
         }
       )
