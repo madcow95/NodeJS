@@ -167,13 +167,10 @@
           success : ( delRes ) => {
             if( delRes == "delSuc" ) {
               location.reload();
-            } else {
-              alert( "통신 중 에러가 발생했습니다. 잠시 후 다시 시도해주세요." );
-              return;
             }
           },
           fail : () => {
-            alert( "통신 중 에러가 발생했습니다. 잠시 후 다시 시도해주세요." );
+            alert( "에러가 발생했습니다. 잠시 후 다시 시도해주세요." );
             return;
           }
         }

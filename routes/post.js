@@ -138,7 +138,6 @@ router.delete( "/deleteReply", ( req, res ) => {
             msg    : "delSuc"
         };
         if( err ) {
-            console.log(err);
             statusInfo.status = 400;
             statusInfo.msg    = "delFail"
         }

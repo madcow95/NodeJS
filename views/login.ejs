@@ -22,7 +22,7 @@
                         <label class="form-label">비밀번호</label>
                         <input type="password" class="form-control" name="password" id="password">
                     </div>
-                    <a class="text-black-50 mt-1" style="float: right; cursor: pointer;">아이디/비밀번호 찾기</a>
+                    <a class="text-black-50 mt-1" style="float: right; cursor: pointer;" onclick="location.href = '/findUserInfo'">아이디/비밀번호 찾기</a>
                     <button type="button" class="btn btn-primary" id="loginBtn" onclick="loginAction()">로그인</button>
                     <button type="button" class="btn btn-waring" onclick="location.href = '/signUp' ">회원가입</button>
                 </div>
@@ -34,8 +34,6 @@
         this.addEventListener( 'keypress', ( e ) => {
             if ( e.key === 'Enter' ) {
                 loginAction();
-            } else {
-                return;
             }
         });
     } );

@@ -1,0 +1,52 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="background-color: #f5f6f7;">
+    <%- include( './component/header.ejs' ) %>
+
+    <div class="container mt-5">
+        <form class="container mt-5 col-md-6" action="/login" method="POST" id="loginForm"
+        style="border: solid black 2px; border-radius: 15px;">
+            <div class="container mt-3">
+                <!-- <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
+                    <label class="form-check-label" for="inlineRadio1">아이디 찾기</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                    <label class="form-check-label" for="inlineRadio2">비밀번호 찾기</label>
+                </div> -->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                    <label class="form-check-label" for="flexSwitchCheckChecked">Checked switch checkbox input</label>
+                </div>
+            </div>
+            <div class="mt-4 mb-4">
+                <div class="mb-3" id="IdDiv" style="display: none;">
+                    <label class="form-label">아이디</label>
+                    <input type="password" class="form-control" name="password" id="password">
+                </div>
+                <div class="mb-3" id="emailDiv">
+                    <label class="form-label">이메일</label>
+                    <input type="text" class="form-control" name="username" id="username">
+                </div>
+                <button type="button" class="btn btn-primary" id="findIdBtn" onclick="findAction()">아이디 찾기</button>
+                <button type="button" class="btn btn-primary" id="findPwBtn" style="display: none;" onclick="findAction()">비밀번호 찾기</button>
+            </div>
+        </form>
+    </div>
+</body>
+<script>
+
+    const findAction = () => {
+
+    }
+</script>
+
+</html>

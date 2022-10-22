@@ -120,6 +120,14 @@ app.get( "/mypage", loginCheck, ( req , res ) => {
     }
 } );
 
+app.get( "/findUserInfo", ( req, res ) => {
+    if( req.user ) {
+        res.render( "findUserInfo.ejs", { user : req.user } );
+    } else {
+        res.render( "findUserInfo.ejs", { user : null } );
+    }
+} );
+
 /**
  * 미들웨어에서는 arrow function이 안먹는다
  * 왜일까?
