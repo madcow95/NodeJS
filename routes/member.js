@@ -77,6 +77,19 @@ router.post( "/updatePwd", ( req, res ) => {
         } );
     } );
 } );
+
+router.post( "/findIdByEmail", ( req, res ) => {
+    db.collection( "member" ).findOne( { email : req.body.email }, ( searchErr, searchRes ) => {
+        if( searchErr ) {
+            res.status( 400 ).send( "errorOccured" );
+        }
+        if( searchRes ) {
+            res.status( 200 ).send( searchRes );
+        } else {
+            res.status( 200 ).send( "noResult" );
+        }
+    } );
+} );
  
   
 // 다른곳에서 post.js를 사용하기 위해 export
