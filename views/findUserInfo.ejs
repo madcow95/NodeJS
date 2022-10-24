@@ -62,12 +62,10 @@
                 },
                 success : ( res ) => {
                     if( typeof( res ) === "object" ) {
-                        console.log(res.username);
                         alert( `입력하신 이메일의 정보로 찾은 아이디 : ${ res.username }` );
                     } else {
                         alert( "일치하는 회원이 없습니다." );
                     }
-                    // alert( res );
                 },
                 fail : ( err ) => {
                     console.log(err);

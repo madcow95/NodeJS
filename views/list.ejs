@@ -38,6 +38,9 @@
                           </a></td>
                         <td>
                           <%= res.username %>
+                          <% if( user && user.username != res.username ) { %>
+                            <button class="btn btn-success" style="float: right;" onclick="window.open('/post/chatRoom/<%= res._id%>||<%= res.username %>||<%= user.username %>','test','width=1200,height=700,resizable=yes')">채팅하기</button>
+                          <% } %>
                         </td>
                         <td>
                           <%= res.addDate %>

@@ -193,7 +193,28 @@ router.get( "/search", ( req, res ) => {
 router.get( "/getImage/:imageName", ( req, res ) => {
     res.sendFile( `${ path.dirname( module.parent.filename ) }/public/image/${ req.params.imageName }` );
 } );
- 
+
+router.get( "/chatRoom/:chatInfo", ( req, res ) => {
+    const userInfo = req.user;
+    const chatInfoArr = req.params.chatInfo.split( "||" );
+    const postId = chatInfoArr[0];
+    const chatResponser = chatInfoArr[1];
+    const chatRequester = chatInfoArr[2];
+    const chatRoomInfo = {
+        postid : postId,
+        chatRequester : chatRequester,
+        chatResponser : chatResponser
+    }
+    db.collection( "chatRoom" ).findOne( chatRoomInfo, ( findChatErr, findChatRes ) => {
+        if( !findChatRes ) {
+            db.collection( "chatRoom" ).insertOne( chatRoomInfo, ( insertChatRoomErr, insertChatRoomRes ) => {
+                res.render( "chatRoom.ejs", { user : userInfo, chatInfos : insertChatRoomRes } );
+            } );
+        } else {
+            res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes } );
+        }
+    } );
+} );
  // 다른곳에서 post.js를 사용하기 위해 export
 module.exports = router;
  
