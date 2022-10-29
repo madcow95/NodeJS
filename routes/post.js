@@ -224,6 +224,22 @@ router.post( "/sendMsg", ( req, res ) => {
         res.status( 200 ).send( "sendSuccess" );
     } );
 } );
- // 다른곳에서 post.js를 사용하기 위해 export
+
+router.get( "/chatRefresh/:postId", ( req, res ) => {
+    res.writeHead( 200, {
+        "Connection" : "keep-alive",
+        "Content-Type" : "text/event-stream",
+        "Cache-Control" : "no-cache"
+    } );
+    const userInfo = req.user;
+    db.collection( "chatRoom" ).findOne( { postid : req.params.postId }, ( findChatErr, findChatRes ) => {
+        db.collection( "chatMessages" ).find( { chatInfos : req.params.postId } ).toArray( ( msgErr, msgRes ) => {
+            // res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes, msgInfos : msgRes } );
+            res.write( "event: test\n" );
+            res.write( `data: ${ JSON.stringify( msgRes ) }\n\n` );
+        } );
+    } );
+} );
+// 다른곳에서 post.js를 사용하기 위해 export
 module.exports = router;
  
