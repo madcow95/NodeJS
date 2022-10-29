@@ -131,8 +131,7 @@ router.delete( "/delete", ( req, res ) => {
 } );
 
 router.delete( "/deleteReply", ( req, res ) => {
-    console.log(ObjectId(req.body.replyId));
-    db.collection( "postReply" ).deleteOne( { _id : ObjectId(req.body.replyId) }, ( err ) => {
+    db.collection( "postReply" ).deleteOne( { _id : ObjectId( req.body.replyId ) }, ( err ) => {
         let statusInfo = {
             status : 200,
             msg    : "delSuc"
@@ -198,21 +197,43 @@ router.get( "/chatRoom/:chatInfo", ( req, res ) => {
     const userInfo = req.user;
     const chatInfoArr = req.params.chatInfo.split( "||" );
     const postId = chatInfoArr[0];
-    const chatResponser = chatInfoArr[1];
-    const chatRequester = chatInfoArr[2];
     const chatRoomInfo = {
-        postid : postId,
-        chatRequester : chatRequester,
-        chatResponser : chatResponser
+        postid : postId
     }
+    // 게시글의 unique 값인 게시글 번호를 db에 조회한다.
     db.collection( "chatRoom" ).findOne( chatRoomInfo, ( findChatErr, findChatRes ) => {
+        let targetObjId = undefined;
+        // 주어진 정보로 생성된 채팅방이 없을 때
         if( !findChatRes ) {
+            chatRoomInfo.createDate = new Date();
+            // 채팅방을 생성한다.
             db.collection( "chatRoom" ).insertOne( chatRoomInfo, ( insertChatRoomErr, insertChatRoomRes ) => {
-                res.render( "chatRoom.ejs", { user : userInfo, chatInfos : insertChatRoomRes } );
+                targetObjId = insertChatRoomRes.insertedId.toString();
+                db.collection( "chatRoom" ).findOne( { _id : ObjectId( targetObjId ) }, ( chatRoomFindErr, chatRoomFindRes ) => {
+                    findChatRes = chatRoomFindRes._id.toString();
+                } );
             } );
+        // 주어진 정보로 생성된 채팅방이 있을 때
         } else {
-            res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes } );
+            // 불러온 채팅방의 ObjectID를 저장한다.
+            targetObjId = findChatRes._id.toString();
         }
+        // 채팅방의 ObjectID로 채팅방의 메세지들을 불러온다.
+        db.collection( "chatMessages" ).find( { chatInfos : targetObjId } ).toArray( ( msgErr, msgRes ) => {
+            // 로그인한 유저, 채팅방 정보, 채팅방 정보 안의 메세지들을 render시킨다.
+            res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes, msgInfos : msgRes } );
+        } );
+    } );
+} );
+
+router.post( "/sendMsg", ( req, res ) => {
+    db.collection( "chatMessages" ).insertOne( req.body, ( insertErr, insertRes ) => {
+        if( insertErr ) {
+            res.status( 400 ).send( "sendFail" );
+            return;
+        }
+
+        res.status( 200 ).send( "sendSuccess" );
     } );
 } );
  // 다른곳에서 post.js를 사용하기 위해 export

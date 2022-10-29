@@ -33,7 +33,6 @@
 <body>
     <%- include( './component/header.ejs' ) %>
     <div class="container p-4 detail">
-        <% if(chatInfos) { console.log(chatInfos)} %>
         <div class="row">
           <div class="col-3">
             <ul class="list-group chat-list">
@@ -51,18 +50,65 @@
            <div class="col-9 p-0">
              <div class="chat-room">
                 <ul class="list-group chat-content">
-                  <li><span class="chat-box">채팅방1 내용</span></li>
-                  <li><span class="chat-box">채팅방1 내용</span></li>
-                  <li><span class="chat-box mine">채팅방1 내용</span></li>
+                  <% if( msgInfos.length > 0 ) { %>
+                    <% msgInfos.forEach( msg => { %>
+                      <% if( msg.sender != user.username ) { %>
+                        <li><span class="chat-box"><%= msg.message %></span></li>
+                      <% } else { %>
+                        <li><span class="chat-box mine"><%= msg.message %></span></li>
+                      <% } %>
+                    <% } ); %>
+                  <% } else { %>
+                    <h6>채팅 내역이 없습니다.</h6>
+                  <% } %>
                 </ul>
               <div class="input-group">
-                <input class="form-control" id="chat-input">
-                <button class="btn btn-secondary" id="send">전송</button>
+                <input class="form-control" id="chat-input" onkeypress="msgEnterCheck( $( '#chat-input' ).val() )">
+                <button class="btn btn-secondary" id="send" onclick="sendMessage( $( '#chat-input' ).val(), `<%= user.username %>`, `<%= chatInfos._id %>` )" disabled>전송</button>
               </div>
             </div>
           </div>
         </div>
-      
-      </div> 
+      </div>
 </body>
+<script>
+
+
+    $( document ).ready( () => {
+      this.addEventListener( 'keypress', ( e ) => {
+        if ( e.key === 'Enter' ) {
+          sendMessage( $( '#chat-input' ).val(), `<%= user.username %>`, `<%= chatInfos._id %>` );
+        }
+      });
+    } );
+
+  const msgEnterCheck = ( msgInput ) => {
+    if( msgInput.length > 0 ) {
+      $( "#send" ).attr( "disabled", false );
+    } else {
+      $( "#send" ).attr( "disabled", true );
+    }
+  }
+
+  const sendMessage = ( msg, sender, chatNo ) => {
+    $.ajax(
+      {
+        method : "post",
+        url    : "/post/sendMsg",
+        data   : {
+          chatInfos : chatNo,
+          message : msg,
+          sender : sender,
+          sendDate : new Date()
+        },
+        success : ( res ) => {
+          location.reload();
+        },
+        fail : ( err ) => {
+          console.log(err);
+        }
+      }
+    )
+  }
+</script>
 </html>
