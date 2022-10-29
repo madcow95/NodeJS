@@ -37,28 +37,19 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
 
 
 app.get( "/", loginCheck, ( req, res ) => {
-    if( req.user ) {
-        res.render( `${ mainDir }/index.ejs`, { user : req.user } );
-    } else {
-        res.render( `${ mainDir }/index.ejs`, { user : null } );
-    }
+    const userInfo = req.user;
+    res.render( `${ mainDir }/index.ejs`, { user : userInfo } );
 } );
 
 app.get( "/write", loginCheck, ( req, res ) => {
-    if( req.user ) {
-        res.render( `${ mainDir }/write.ejs`, { user : req.user } );
-    } else {
-        res.render( `${ mainDir }/write.ejs`, { user : null } );
-    }
+    const userInfo = req.user;
+    res.render( `${ mainDir }/write.ejs`, { user : userInfo } );
 } )
 
 app.get( "/list", loginCheck, ( req, res ) => {
+    const userInfo = req.user;
     db.collection( "post" ).find().toArray( ( err, result ) => {
-        if( req.user ) {
-            res.render( `${ mainDir }/list.ejs`, { user : req.user, results : result } );
-        } else {
-            res.render( `${ mainDir }/list.ejs`, { user : null, results : result } );
-        }
+        res.render( `${ mainDir }/list.ejs`, { user : userInfo, results : result } );
     } );
 } );
 
@@ -113,19 +104,13 @@ passport.use( new localStrategy( {
  * mypage경로로 접속 했을 때 loginCheck를 실행시킴
  */
 app.get( "/mypage", loginCheck, ( req , res ) => {
-    if( req.user ) {
-        res.render( "mypage.ejs", { user : req.user } );
-    } else {
-        res.redirect( "/" );
-    }
+    const userInfo = req.user;
+    res.render( "mypage.ejs", { user : userInfo } );
 } );
 
 app.get( "/findUserInfo", ( req, res ) => {
-    if( req.user ) {
-        res.render( "findUserInfo.ejs", { user : req.user } );
-    } else {
-        res.render( "findUserInfo.ejs", { user : null } );
-    }
+    const userInfo = req.user;
+    res.render( "findUserInfo.ejs", { user : userInfo } );
 } );
 
 /**

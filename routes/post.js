@@ -58,11 +58,8 @@ router.post( "/add", FileUpload.single( "FileName" ), ( req, res ) => {
                 if( err ) console.log(err);
 
                 db.collection( "post" ).find().toArray( ( err, result ) => {
-                    if( req.user ) {
-                        res.render( `${ ViewDir }/list.ejs`, { user : req.user, results : result } );
-                    } else {
-                        res.render( `${ ViewDir }/list.ejs`, { user : null, results : result } );
-                    }
+                    const userInfo = req.user;
+                    res.render( `${ ViewDir }/list.ejs`, { user : userInfo, results : result } );
                 } );
             } );
         } );
@@ -94,11 +91,8 @@ router.post( "/addReply", ( req, res ) => {
 router.get( "/detail/:id", ( req, res ) => {
     db.collection( "post" ).findOne( { _id : parseInt( req.params.id ) }, ( err, searchRes ) => {
         db.collection( "postReply" ).find( { postNum : parseInt( searchRes._id ) } ).toArray( ( replyErr, replyRes ) => {
-            if( req.user ) {
-                res.render( "detail.ejs", { searchData : searchRes, user : req.user, replyInfo : replyRes } );
-            } else {
-                res.render( "detail.ejs", { searchData : searchRes, user : null, replyInfo : replyRes } );
-            }
+            const userInfo = req.user;
+            res.render( "detail.ejs", { searchData : searchRes, user : userInfo, replyInfo : replyRes } );
         } )
     } );
 } );
@@ -111,11 +105,8 @@ router.put( "/edit", ( req, res ) => {
     db.collection( "post" ).updateOne( { _id : parseInt( req.body.postId ) }, 
                                        { $set : { subject : req.body.subject, content : req.body.content } }, ( err, updateRes ) => {
         if( err ) console.log(err);
-        if( req.user ) {
-            res.render( "detail.ejs", { searchData : req.body, user : req.user } );
-        } else {
-            res.render( "detail.ejs", { searchData : req.body, user : null } );
-        }
+        const userInfo = req.user;
+        res.render( "detail.ejs", { searchData : req.body, user : userInfo } );
     } );
 } );
  
@@ -181,11 +172,8 @@ router.get( "/search", ( req, res ) => {
     ];
     db.collection( "post" ).aggregate( searchCriteria ).toArray( ( err, searchRes ) => {
         if( err ) console.log(err);
-        if( req.user ) {
-            res.render( "list.ejs", { results : searchRes, user : req.user } );
-        } else {
-            res.render( "list.ejs", { results : searchRes, user : null } );
-        }
+        const userInfo = req.user;
+        res.render( "list.ejs", { results : searchRes, user : userInfo } );
     } );
 } );
 
