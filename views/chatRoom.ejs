@@ -50,7 +50,7 @@
            <div class="col-9 p-0">
              <div class="chat-room">
                 <ul class="list-group chat-content">
-                  <% if( msgInfos.length > 0 ) { %>
+                  <!-- <% if( msgInfos.length > 0 ) { %>
                     <% msgInfos.forEach( msg => { %>
                       <% if( msg.sender != user.username ) { %>
                         <li><span class="chat-box"><%= msg.message %></span></li>
@@ -60,7 +60,7 @@
                     <% } ); %>
                   <% } else { %>
                     <h6>채팅 내역이 없습니다.</h6>
-                  <% } %>
+                  <% } %> -->
                 </ul>
               <div class="input-group">
                 <input class="form-control" id="chat-input" onkeypress="msgEnterCheck( $( '#chat-input' ).val() )">
@@ -73,13 +73,36 @@
 </body>
 <script>
 
-    let eventSource;
+    let eventSource = undefined;
     $( document ).ready( () => {
       this.addEventListener( 'keypress', ( e ) => {
         if ( e.key === 'Enter' ) {
           sendMessage( $( '#chat-input' ).val(), `<%= user.username %>`, `<%= chatInfos._id %>` );
         }
       });
+
+      if( eventSource != undefined ) {
+        eventSource.close();
+      }
+
+      eventSource = new EventSource( "/post/chatRefresh/<%= chatInfos._id.toString() %>" );
+      eventSource.addEventListener( "msgRes", ( e ) => {
+        const returnMessages = JSON.parse( e.data );
+        const parentEle = $( ".chat-content" );
+
+        returnMessages.forEach( msg => {
+          const createSpanClassName = msg.sender == "<%= user.username %>";
+          if( createSpanClassName ) {
+            parentEle.append(
+              `<li><span class="chat-box mine">${ msg.message }</span></li>`
+            );
+          } else {
+            parentEle.append(
+              `<li><span class="chat-box">${ msg.message }</span></li>`
+            );
+          }
+        } );
+      } );
     } );
 
   const msgEnterCheck = ( msgInput ) => {
@@ -102,18 +125,10 @@
           sendDate : new Date()
         },
         success : ( res ) => {
-          eventSource = new EventSource( "/post/chatRefresh/<%= chatInfos._id.toString() %>" );
-          eventSource.addEventListener( "test", ( e ) => {
-            const returnMessages = JSON.parse( e.data );
-            const parentContent = document.getElementsByClassName( "chat-content" );
-            console.log(returnMessages.length);
-            const createList = document.createElement( "li" );
-            const createSpan = document.createElement( "span" );
-            createSpan.setAttribute( "<%  %>" )
-            // returnMessages.forEach( msg => {
-
-            // } );
-          } );
+          setTimeout( () => {
+            document.getElementsByClassName("chat-content")[0].scrollTop = document.getElementsByClassName("chat-content")[0].scrollHeight;
+          }, 100 );
+          $( "#chat-input" ).val( "" );
         },
         fail : ( err ) => {
           console.log(err);

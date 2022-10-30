@@ -209,6 +209,7 @@ router.get( "/chatRoom/:chatInfo", ( req, res ) => {
         // 채팅방의 ObjectID로 채팅방의 메세지들을 불러온다.
         db.collection( "chatMessages" ).find( { chatInfos : targetObjId } ).toArray( ( msgErr, msgRes ) => {
             // 로그인한 유저, 채팅방 정보, 채팅방 정보 안의 메세지들을 render시킨다.
+            msgRes = [];
             res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes, msgInfos : msgRes } );
         } );
     } );
@@ -231,15 +232,28 @@ router.get( "/chatRefresh/:postId", ( req, res ) => {
         "Content-Type" : "text/event-stream",
         "Cache-Control" : "no-cache"
     } );
-    const userInfo = req.user;
     db.collection( "chatRoom" ).findOne( { postid : req.params.postId }, ( findChatErr, findChatRes ) => {
         db.collection( "chatMessages" ).find( { chatInfos : req.params.postId } ).toArray( ( msgErr, msgRes ) => {
-            // res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes, msgInfos : msgRes } );
-            res.write( "event: test\n" );
+            res.write( "event: msgRes\n" );
             res.write( `data: ${ JSON.stringify( msgRes ) }\n\n` );
         } );
     } );
+
+    // DB Collection에 변동이 생기면 알려주는 일종의 Event Listener
+    const pipeLine = [
+        // collection 안의 원하는 document만 감시하고 싶다면 match 수정
+        // 아래 작성한 document가 추가, 수정, 삭제가 되면 실행
+        { $match: { "fullDocument.chatInfos" : req.params.postId } }
+    ];
+    const collection = db.collection( "chatMessages" );
+    const changeStream = collection.watch( pipeLine );
+    // change가 감지되면 아래가 실행
+    changeStream.on( "change", ( changeRes ) => {
+        res.write( "event: msgRes\n" );
+        res.write( `data: ${ JSON.stringify( [ changeRes.fullDocument ] ) }\n\n` );
+    } );
 } );
+
 // 다른곳에서 post.js를 사용하기 위해 export
 module.exports = router;
  
