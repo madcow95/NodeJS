@@ -9,6 +9,9 @@ const CommonUtil        = require( "./util/common.js" );
 
 const mainDir           = `${ __dirname }/views`;
 const app               = express();
+const http              = require( "http" ).createServer( app );
+const { Server }        = require( "socket.io" );
+const io                = new Server( http );
 
 // 미들웨어 : Request - Response 중간에 실행되는 코드
 require( "dotenv" ).config();
@@ -32,7 +35,8 @@ MongoClient.connect( process.env.DB_URL, ( err, client ) => {
     }
 
     db = client.db( "todoapp" );
-    app.listen( 8080 );
+    // app.listen -> http.listen : 서버에 socket.io 설치 완료
+    http.listen( 8080 );
 } );
 
 
@@ -112,6 +116,27 @@ app.get( "/findUserInfo", ( req, res ) => {
     const userInfo = req.user;
     res.render( "findUserInfo.ejs", { user : userInfo } );
 } );
+
+app.get( "/socket", ( req, res ) => {
+    const userInfo = req.user;
+    res.render( "socket.ejs", { user : userInfo } );
+} );
+
+// 일종의 Event Listener : Web Socket에 접속시 실행할 때
+io.on( "connection", ( socket ) => {
+    // msg이름으로 전송이 된다면 내부 코드 실행
+    socket.on( "msg", ( data ) => {
+        // socket에 접속한 모든 사람에게 전송해줌.
+        io.emit( "broadcast", data );
+        // socket.id => 현재 socket에 접속한 사람들
+        // io.to(socket.id).emit("broadcast", data); => 특정한 사람에게만 전송 1:1 채팅
+    } );
+    
+    /**
+     * socket.join( 'room1' ) => 채팅방 생성, 유저를 넣어줌
+     */
+} );
+
 
 /**
  * 미들웨어에서는 arrow function이 안먹는다

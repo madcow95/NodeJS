@@ -1,0 +1,30 @@
+<html lang="en">
+<!-- 테스트용 -> 채팅화면으로 변경 예정 -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="background-color: #f5f6f7;">
+    <%- include( './component/header.ejs' ) %>
+    <div>채팅방</div>
+    <input type="text" id="MsgContent">
+    <button id="sendMsg">메세지 보내기</button>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    $( "#sendMsg" ).click( () => {
+        // Event명, 전달할 내용
+        socket.emit( "msg", $( "#MsgContent" ).val() );
+    } );
+
+    socket.on( "broadcast", ( data ) => {
+        console.log(data);
+    } );
+</script>
+
+</html>

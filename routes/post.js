@@ -226,6 +226,7 @@ router.post( "/sendMsg", ( req, res ) => {
     } );
 } );
 
+// 서버 -> 유저 일방적 통신
 router.get( "/chatRefresh/:postId", ( req, res ) => {
     res.writeHead( 200, {
         "Connection" : "keep-alive",
