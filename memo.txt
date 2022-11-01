@@ -65,3 +65,59 @@
 1. session-based
 2. token-based(JWT -> JSON Web Token) => 학원에서 했던거인듯
 3. Open Authentication(OAuth) -> google, github 등 다른 곳의 정보로 로그인하는 소셜로그인
+
+    // let eventSource = undefined;
+    // $( document ).ready( () => {
+    //   this.addEventListener( 'keypress', ( e ) => {
+    //     if ( e.key === 'Enter' ) {
+    //       sendMessage( $( '#chat-input' ).val(), `<%= user.username %>`, `<%= chatInfos._id %>` );
+    //     }
+    //   });
+
+    //   if( eventSource != undefined ) {
+    //     eventSource.close();
+    //   }
+
+    //   eventSource = new EventSource( "/post/chatRefresh/<%= chatInfos._id.toString() %>" );
+    //   eventSource.addEventListener( "msgRes", ( e ) => {
+    //     const returnMessages = JSON.parse( e.data );
+    //     const parentEle = $( ".chat-content" );
+
+    //     returnMessages.forEach( msg => {
+    //       const createSpanClassName = msg.sender == "<%= user.username %>";
+    //       if( createSpanClassName ) {
+    //         parentEle.append(
+    //           `<li><span class="chat-box mine">${ msg.message }</span></li>`
+    //         );
+    //       } else {
+    //         parentEle.append(
+    //           `<li><span class="chat-box">${ msg.message }</span></li>`
+    //         );
+    //       }
+    //     } );
+    //   } );
+    // } );
+
+  // const sendMessage = ( msg, sender, chatNo ) => {
+  //   $.ajax(
+  //     {
+  //       method : "post",
+  //       url    : "/post/sendMsg",
+  //       data   : {
+  //         chatInfos : chatNo,
+  //         message : msg,
+  //         sender : sender,
+  //         sendDate : new Date()
+  //       },
+  //       success : ( res ) => {
+  //         setTimeout( () => {
+  //           document.getElementsByClassName("chat-content")[0].scrollTop = document.getElementsByClassName("chat-content")[0].scrollHeight;
+  //         }, 100 );
+  //         $( "#chat-input" ).val( "" );
+  //       },
+  //       fail : ( err ) => {
+  //         console.log(err);
+  //       }
+  //     }
+  //   )
+  // }

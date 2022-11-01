@@ -35,106 +35,72 @@
     <div class="container p-4 detail">
         <div class="row">
           <div class="col-3">
+            <button type="button" class="btn btn-info mb-1" data-bs-toggle="modal" data-bs-target="#exampleModal">채팅 초대</button>
             <ul class="list-group chat-list">
-              <li class="list-group-item" data-id="">
-                <h6>채팅방1</h6>
-                <h6 class="text-small">채팅방설명</h6>
-              </li>
-              <li class="list-group-item">
-                 <h6>채팅방2</h6>
-                 <h6 class="text-small">채팅방설명</h6>
-               </li>
+              <% if( chatRooms.length > 0 ) { %>
+                <% chatRooms.forEach( room => { %>
+                  <li class="list-group-item" onclick="showChatDiv()">
+                    <h6>room.roomSubject</h6>
+                    <h6 class="text-small">room.roomDesc</h6>
+                  </li>
+                <% } ) %>
+              <% } else { %>
+                <li class="list-group-item" onclick="showChatDiv()">
+                  <h6>현재 참여중인 채팅이 없습니다.</h6>
+                </li>
+              <% } %>
              </ul>
            </div>
       
-           <div class="col-9 p-0">
+           <div class="col-9 p-0" id="chatDiv" style="display: none;">
              <div class="chat-room">
                 <ul class="list-group chat-content">
-                  <!-- <% if( msgInfos.length > 0 ) { %>
-                    <% msgInfos.forEach( msg => { %>
-                      <% if( msg.sender != user.username ) { %>
-                        <li><span class="chat-box"><%= msg.message %></span></li>
-                      <% } else { %>
-                        <li><span class="chat-box mine"><%= msg.message %></span></li>
-                      <% } %>
-                    <% } ); %>
-                  <% } else { %>
-                    <h6>채팅 내역이 없습니다.</h6>
-                  <% } %> -->
                 </ul>
               <div class="input-group">
                 <input class="form-control" id="chat-input" onkeypress="msgEnterCheck( $( '#chat-input' ).val() )">
-                <button class="btn btn-secondary" id="send" onclick="sendMessage( $( '#chat-input' ).val(), `<%= user.username %>`, `<%= chatInfos._id %>` )" disabled>전송</button>
+                <button class="btn btn-secondary" id="send" onclick="sendMessage( $( '#chat-input' ).val(), `<%= user.username %>` )" disabled>전송</button>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <% allMembers.forEach( member => { %>
+                <h6><%= member.username %></h6>
+              <% } ) %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-primary">초대</button>
+            </div>
+          </div>
+        </div>
+      </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"></script>
 <script>
-
-    let eventSource = undefined;
-    $( document ).ready( () => {
-      this.addEventListener( 'keypress', ( e ) => {
-        if ( e.key === 'Enter' ) {
-          sendMessage( $( '#chat-input' ).val(), `<%= user.username %>`, `<%= chatInfos._id %>` );
-        }
-      });
-
-      if( eventSource != undefined ) {
-        eventSource.close();
-      }
-
-      eventSource = new EventSource( "/post/chatRefresh/<%= chatInfos._id.toString() %>" );
-      eventSource.addEventListener( "msgRes", ( e ) => {
-        const returnMessages = JSON.parse( e.data );
-        const parentEle = $( ".chat-content" );
-
-        returnMessages.forEach( msg => {
-          const createSpanClassName = msg.sender == "<%= user.username %>";
-          if( createSpanClassName ) {
-            parentEle.append(
-              `<li><span class="chat-box mine">${ msg.message }</span></li>`
-            );
-          } else {
-            parentEle.append(
-              `<li><span class="chat-box">${ msg.message }</span></li>`
-            );
-          }
-        } );
-      } );
-    } );
-
-  const msgEnterCheck = ( msgInput ) => {
-    if( msgInput.length > 0 ) {
-      $( "#send" ).attr( "disabled", false );
-    } else {
-      $( "#send" ).attr( "disabled", true );
+    const showChatDiv = () => {
+      $( "#chatDiv" ).attr( "style", "display: ;" );
     }
-  }
 
-  const sendMessage = ( msg, sender, chatNo ) => {
-    $.ajax(
-      {
-        method : "post",
-        url    : "/post/sendMsg",
-        data   : {
-          chatInfos : chatNo,
-          message : msg,
-          sender : sender,
-          sendDate : new Date()
-        },
-        success : ( res ) => {
-          setTimeout( () => {
-            document.getElementsByClassName("chat-content")[0].scrollTop = document.getElementsByClassName("chat-content")[0].scrollHeight;
-          }, 100 );
-          $( "#chat-input" ).val( "" );
-        },
-        fail : ( err ) => {
-          console.log(err);
-        }
+    const msgEnterCheck = ( msgInput ) => {
+      if( msgInput.length > 0 ) {
+        $( "#send" ).attr( "disabled", false );
+      } else {
+        $( "#send" ).attr( "disabled", true );
       }
-    )
-  }
+    }
+    const socket = io();
+    const sendMessage = ( sender ) => {
+      console.log(sender);
+      console.log(postId);
+    }
 </script>
 </html>

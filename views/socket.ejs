@@ -17,14 +17,14 @@
 <script>
     const socket = io();
 
-    $( "#sendMsg" ).click( () => {
-        // Event명, 전달할 내용
-        socket.emit( "msg", $( "#MsgContent" ).val() );
-    } );
+$( "#sendMsg" ).click( () => {
+    // Event명, 전달할 내용
+    socket.emit( "msg", $( "#MsgContent" ).val() );
+} );
 
-    socket.on( "broadcast", ( data ) => {
-        console.log(data);
-    } );
+socket.on( "broadcast", ( data ) => {
+    console.log(data);
+} );
 </script>
 
 </html>

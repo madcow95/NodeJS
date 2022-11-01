@@ -122,6 +122,24 @@ app.get( "/socket", ( req, res ) => {
     res.render( "socket.ejs", { user : userInfo } );
 } );
 
+app.get( "/chatRoom", ( req, res ) => {
+    const userInfo = req.user;
+    db.collection( "member" ).find().toArray().then( memberArr => {
+        memberArr = memberArr.filter( member => {
+            if( member.username != userInfo.username ) {
+                return member;
+            }
+        } );
+        db.collection( "chatRoom" ).find( { chatRequester : userInfo.username } ).toArray().then( chatRoomRes => {
+            res.render( "chatRoom.ejs", { chatRooms : chatRoomRes, user : userInfo, allMembers : memberArr } );
+        } )
+    } );
+    // db.collection( "chatRoom", { chatRequester : userInfo.username }, ( chatRoomErr, chatRoomRes ) => {
+    //     console.log({chatRoomRes});
+    //     res.render( "chatRoom.ejs", { chatRooms : chatRoomRes, user : userInfo } );
+    // } );
+} );
+
 // 일종의 Event Listener : Web Socket에 접속시 실행할 때
 io.on( "connection", ( socket ) => {
     // msg이름으로 전송이 된다면 내부 코드 실행
