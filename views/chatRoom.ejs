@@ -73,12 +73,12 @@
             </div>
             <div class="modal-body">
               <% allMembers.forEach( member => { %>
-                <h6><input class="form-check-input" type="checkbox" value="" id="userCheck">&nbsp;&nbsp;<%= member.username %></h6>
+                <h6><input class="form-check-input" type="checkbox" value="">&nbsp;&nbsp;<%= member.username %></h6>
               <% } ) %>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-              <button type="button" class="btn btn-primary">초대</button>
+              <button type="button" class="btn btn-primary" id="inviteBtn" disabled>초대</button>
             </div>
           </div>
         </div>
@@ -86,21 +86,30 @@
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"></script>
 <script>
-    const showChatDiv = () => {
-      $( "#chatDiv" ).attr( "style", "display: ;" );
-    }
-
-    const msgEnterCheck = ( msgInput ) => {
-      if( msgInput.length > 0 ) {
-        $( "#send" ).attr( "disabled", false );
-      } else {
-        $( "#send" ).attr( "disabled", true );
+  $( document ).ready( () => {
+    [ ...$( ".form-check-input" ) ].forEach( ( ele, idx ) => {
+      // ele.setAttribute( "id", `userCheck${ idx }` );
+      if( ele.checked == true ) {
+        $( "#inviteBtn" ).prop( "disabled", true );
       }
+    } );
+  } );
+
+  const showChatDiv = () => {
+    $( "#chatDiv" ).attr( "style", "display: ;" );
+  }
+
+  const msgEnterCheck = ( msgInput ) => {
+    if( msgInput.length > 0 ) {
+      $( "#send" ).attr( "disabled", false );
+    } else {
+      $( "#send" ).attr( "disabled", true );
     }
-    const socket = io();
-    const sendMessage = ( sender ) => {
-      console.log(sender);
-      console.log(postId);
-    }
+  }
+  const socket = io();
+  const sendMessage = ( sender ) => {
+    console.log(sender);
+    console.log(postId);
+  }
 </script>
 </html>
