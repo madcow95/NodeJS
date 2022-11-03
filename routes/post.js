@@ -181,6 +181,28 @@ router.get( "/getImage/:imageName", ( req, res ) => {
     res.sendFile( `${ path.dirname( module.parent.filename ) }/public/image/${ req.params.imageName }` );
 } );
 
+router.post( "/chatRoom", ( req, res ) => {
+    const chatRoomInfo = {
+        chatRequester : req.body.chatRequester,
+        chatResponser : req.body.chatResponser
+    }
+    db.collection( "chatRoom" ).findOne( chatRoomInfo ).then( chatRoomRes => {
+        if( chatRoomRes ) {
+            res.status( 200 ).send( "existChatRoom" );
+        } else {
+            db.collection( "chatRoom" ).insertOne( req.body ).then( () => {
+                res.status( 200 ).send( "createComplete" );
+            } );
+        }
+    } );
+} );
+
+router.post( "/getChatMsg", ( req, res ) => {
+    db.collection( "chatRoomMessages" ).find( { chatRoomId : req.body.chatRoomId } ).toArray().then( chatMsgRes => {
+        res.status( 200 ).send( JSON.stringify( chatMsgRes ) );
+    } );
+} );
+
 router.get( "/chatRoom/:chatInfo", ( req, res ) => {
     const userInfo = req.user;
     const chatInfoArr = req.params.chatInfo.split( "||" );

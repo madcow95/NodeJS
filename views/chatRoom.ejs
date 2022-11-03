@@ -39,13 +39,14 @@
             <ul class="list-group chat-list">
               <% if( chatRooms.length > 0 ) { %>
                 <% chatRooms.forEach( room => { %>
-                  <li class="list-group-item" onclick="showChatDiv()">
-                    <h6>room.roomSubject</h6>
-                    <h6 class="text-small">room.roomDesc</h6>
+                  <li class="list-group-item" onclick="showChatDiv( '<%= room._id %>' )">
+                    <h6><%= room.chatRoomSubject %></h6>
+                    <h6 class="text-small"><%= room.chatRoomDesc %></h6>
+                    <input type="hidden" id="chatRoomId" value="<%= room._id %>"/>
                   </li>
                 <% } ) %>
               <% } else { %>
-                <li class="list-group-item" onclick="showChatDiv()">
+                <li class="list-group-item">
                   <h6>현재 참여중인 채팅이 없습니다.</h6>
                 </li>
               <% } %>
@@ -55,6 +56,7 @@
            <div class="col-9 p-0" id="chatDiv" style="display: none;">
              <div class="chat-room">
                 <ul class="list-group chat-content">
+
                 </ul>
               <div class="input-group">
                 <input class="form-control" id="chat-input" onkeypress="msgEnterCheck( $( '#chat-input' ).val() )">
@@ -88,30 +90,69 @@
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"></script>
 <script>
-  $( document ).ready( () => {
-    [ ...$( ".form-check-input" ) ].forEach( ( ele, idx ) => {
-      // ele.setAttribute( "id", `userCheck${ idx }` );
-      if( ele.checked == true ) {
-        $( "#inviteBtn" ).prop( "disabled", true );
-      }
-    } );
-  } );
-
   const inviteChat = () => {
     const inviteTarget = [ ...$( ".form-check-input" ) ].map( ele => {
       if( ele.checked ) {
         return ele.value;
       }
     } ).filter( ele => ele !== undefined );
+
     if( inviteTarget.length < 1 ) {
       alert( "초대할 회원을 선택해주세요." );
       return;
     }
-    console.log(inviteTarget)
+
+    $.ajax(
+      {
+        method : "post",
+        url    : "/post/chatRoom",
+        data   : {
+          chatRequester   : "<%= user.username %>",
+          chatResponser   : inviteTarget,
+          chatCreateDate  : new Date(),
+          chatRoomSubject : `${ inviteTarget.toString() }`,
+          chatRoomDesc    : "채팅방입니다."
+        },
+        success: ( res ) => {
+          if( res === "existChatRoom" ) {
+            alert( "이미 만들어진 채팅방입니다." );
+          } else {
+            location.reload();
+          }
+        },
+        fail: () => {
+          alert( "서버에 문제가 생겼습니다.\n잠시 후 다시 시도해주세요." );
+        }
+      }
+    )
   }
 
-  const showChatDiv = () => {
+  const socket = io();
+  const showChatDiv = ( chatId ) => {
     $( "#chatDiv" ).attr( "style", "display: ;" );
+    $.ajax(
+      {
+        method : "post",
+        url    : "/post/getChatMsg",
+        data   : {
+          chatRoomId : chatId.toString()
+        },
+        success : ( res ) => {
+          const chatMsgs = JSON.parse( res );
+          const parentEle = $( ".chat-content" );
+          chatMsgs.forEach( msg => {
+            if( "<%= user.username %>" === msg.chatRequester ) {
+              parentEle.append( `<li><span class="chat-box mine">${ msg.chatMessage }</span></li>` );
+            } else {
+              parentEle.append( `<li><span class="chat-box">${ msg.chatMessage }</span></li>` );
+            }
+          } );
+        },
+        fail : ( err ) => {
+          alert(err);
+        }
+      }
+    )
   }
 
   const msgEnterCheck = ( msgInput ) => {
@@ -121,10 +162,15 @@
       $( "#send" ).attr( "disabled", true );
     }
   }
-  const socket = io();
-  const sendMessage = ( sender ) => {
-    console.log(sender);
-    console.log(postId);
+
+  const sendMessage = ( msg, sender, responser ) => {
+    const msgInfo = {
+      chatRoomId    : $( "#chatRoomId" ).val(),
+      chatRequester : sender,
+      chatMessage   : msg,
+      sendDate      : new Date()
+    }
+    socket.emit( "msg", msgInfo );
   }
 </script>
 </html>
