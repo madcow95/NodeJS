@@ -200,7 +200,7 @@ router.post( "/chatRoom", ( req, res ) => {
                 if( chatRoomRes2 ) {
                     res.status( 200 ).send( "existChatRoom" );
                 } else {
-                    db.collection( "chatRoom" ).insertOne( chatRoomCreateData ).then( () => {
+                    db.collection( "chatRoom" ).insertOne( req.body ).then( () => {
                         res.status( 200 ).send( "createComplete" );
                     } );
                 }
@@ -255,39 +255,38 @@ router.post( "/sendMsg", ( req, res ) => {
             res.status( 400 ).send( "sendFail" );
             return;
         }
-
         res.status( 200 ).send( "sendSuccess" );
     } );
 } );
 
 // 서버 -> 유저 일방적 통신
-router.get( "/chatRefresh/:postId", ( req, res ) => {
-    res.writeHead( 200, {
-        "Connection" : "keep-alive",
-        "Content-Type" : "text/event-stream",
-        "Cache-Control" : "no-cache"
-    } );
-    db.collection( "chatRoom" ).findOne( { postid : req.params.postId }, ( findChatErr, findChatRes ) => {
-        db.collection( "chatMessages" ).find( { chatInfos : req.params.postId } ).toArray( ( msgErr, msgRes ) => {
-            res.write( "event: msgRes\n" );
-            res.write( `data: ${ JSON.stringify( msgRes ) }\n\n` );
-        } );
-    } );
+// router.get( "/chatRefresh/:postId", ( req, res ) => {
+//     res.writeHead( 200, {
+//         "Connection" : "keep-alive",
+//         "Content-Type" : "text/event-stream",
+//         "Cache-Control" : "no-cache"
+//     } );
+//     db.collection( "chatRoom" ).findOne( { postid : req.params.postId }, ( findChatErr, findChatRes ) => {
+//         db.collection( "chatMessages" ).find( { chatInfos : req.params.postId } ).toArray( ( msgErr, msgRes ) => {
+//             res.write( "event: msgRes\n" );
+//             res.write( `data: ${ JSON.stringify( msgRes ) }\n\n` );
+//         } );
+//     } );
 
-    // DB Collection에 변동이 생기면 알려주는 일종의 Event Listener
-    const pipeLine = [
-        // collection 안의 원하는 document만 감시하고 싶다면 match 수정
-        // 아래 작성한 document가 추가, 수정, 삭제가 되면 실행
-        { $match: { "fullDocument.chatInfos" : req.params.postId } }
-    ];
-    const collection = db.collection( "chatMessages" );
-    const changeStream = collection.watch( pipeLine );
-    // change가 감지되면 아래가 실행
-    changeStream.on( "change", ( changeRes ) => {
-        res.write( "event: msgRes\n" );
-        res.write( `data: ${ JSON.stringify( [ changeRes.fullDocument ] ) }\n\n` );
-    } );
-} );
+//     // DB Collection에 변동이 생기면 알려주는 일종의 Event Listener
+//     const pipeLine = [
+//         // collection 안의 원하는 document만 감시하고 싶다면 match 수정
+//         // 아래 작성한 document가 추가, 수정, 삭제가 되면 실행
+//         { $match: { "fullDocument.chatInfos" : req.params.postId } }
+//     ];
+//     const collection = db.collection( "chatMessages" );
+//     const changeStream = collection.watch( pipeLine );
+//     // change가 감지되면 아래가 실행
+//     changeStream.on( "change", ( changeRes ) => {
+//         res.write( "event: msgRes\n" );
+//         res.write( `data: ${ JSON.stringify( [ changeRes.fullDocument ] ) }\n\n` );
+//     } );
+// } );
 
 // 다른곳에서 post.js를 사용하기 위해 export
 module.exports = router;

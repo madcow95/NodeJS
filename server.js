@@ -128,6 +128,9 @@ app.get( "/chatRoom", ( req, res ) => {
         db.collection( "chatRoom" ).find( { chatRequester : userInfo.username } ).toArray().then( chatRoomRes => {
             db.collection( "chatRoom" ).find( { chatResponser : userInfo.username } ).toArray().then( chatRoomRes2 => {
                 const allChatRoom = chatRoomRes.concat( chatRoomRes2 );
+                allChatRoom.sort( ( a, b ) => {
+                    return a.chatCreateDate - b.chatCreateDate;
+                } );
                 res.render( "chatRoom.ejs", { chatRooms : allChatRoom, user : userInfo, allMembers : memberArr } );
             } );
         } )
