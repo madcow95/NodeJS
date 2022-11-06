@@ -90,47 +90,50 @@
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"></script>
 <script>
-const inviteChat = () => {
-  const inviteTarget = [ ...$( ".form-check-input" ) ].map( ele => {
-    if( ele.checked ) {
-      return ele.value;
-    }
-  } ).filter( ele => ele !== undefined );
-
-  if( inviteTarget.length < 1 ) {
-    alert( "초대할 회원을 선택해주세요." );
-    return;
-  }
-
-  $.ajax(
-    {
-      method : "post",
-      url    : "/post/chatRoom",
-      data   : {
-        chatRequester   : "<%= user.username %>",
-        chatResponser   : inviteTarget,
-        chatCreateDate  : new Date(),
-        chatRoomSubject : `${ inviteTarget.toString() }`,
-        chatRoomDesc    : "채팅방입니다."
-      },
-      success: ( res ) => {
-        if( res === "existChatRoom" ) {
-          alert( "이미 만들어진 채팅방입니다." );
-        } else {
-          location.reload();
-        }
-      },
-      fail: () => {
-        alert( "서버에 문제가 생겼습니다.\n잠시 후 다시 시도해주세요." );
+  let chatRoomID = undefined;
+  const inviteChat = () => {
+    const inviteTarget = [ ...$( ".form-check-input" ) ].map( ele => {
+      if( ele.checked ) {
+        return ele.value;
       }
+    } ).filter( ele => ele !== undefined );
+
+    if( inviteTarget.length < 1 ) {
+      alert( "초대할 회원을 선택해주세요." );
+      return;
     }
-  )
-}
+
+    $.ajax(
+      {
+        method : "post",
+        url    : "/post/chatRoom",
+        data   : {
+          chatRequester   : "<%= user.username %>",
+          chatResponser   : inviteTarget,
+          chatCreateDate  : new Date(),
+          chatRoomSubject : `${ inviteTarget.toString() }`,
+          chatRoomDesc    : "채팅방입니다."
+        },
+        success: ( res ) => {
+          if( res === "existChatRoom" ) {
+            alert( "이미 만들어진 채팅방입니다." );
+          } else {
+            location.reload();
+          }
+        },
+        fail: () => {
+          alert( "서버에 문제가 생겼습니다.\n잠시 후 다시 시도해주세요." );
+        }
+      }
+    )
+  }
 
   const socket = io();
   const showChatDiv = ( chatId ) => {
+    chatRoomID = chatId;
     $( "#chatDiv" ).attr( "style", "display: ;" );
     const parentEle = $( ".chat-content" );
+    _removeChildren( parentEle );
     $.ajax(
       {
         method : "post",
@@ -140,7 +143,6 @@ const inviteChat = () => {
         },
         success : ( res ) => {
           const chatMsgs = JSON.parse( res );
-          parentEle.append();
           chatMsgs.forEach( msg => {
             if( "<%= user.username %>" === msg.chatRequester ) {
               parentEle.append( `<li><span class="chat-box mine">${ msg.chatMessage }</span></li>` );
@@ -156,14 +158,30 @@ const inviteChat = () => {
     )
   }
 
+  const _removeChildren = ( ele ) => {
+    while( ele[0].hasChildNodes() ) {
+      ele[0].removeChild( ele[0].firstChild );
+    }
+  }
+
   const sendMessage = ( msg, sender, responser ) => {
     const msgInfo = {
-      chatRoomId    : $( "#chatRoomId" ).val(),
+      chatRoomId    : chatRoomID,
       chatRequester : sender,
       chatMessage   : msg,
       sendDate      : new Date()
     }
     socket.emit( "msg", msgInfo );
+    $( "#chat-input" ).val( "" );
   }
+
+  socket.on( "broadcast", ( data ) => {
+    const parentEle = $( ".chat-content" );
+    if( data.chatRequester == "<%= user.username %>" ) {
+      parentEle.append( `<li><span class="chat-box mine">${ data.chatMessage }</span></li>` );
+    } else {
+      parentEle.append( `<li><span class="chat-box">${ data.chatMessage }</span></li>` );
+    }
+  } );
 </script>
 </html>

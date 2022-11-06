@@ -182,16 +182,34 @@ router.get( "/getImage/:imageName", ( req, res ) => {
 } );
 
 router.post( "/chatRoom", ( req, res ) => {
-    const chatRoomInfo = {
-        chatRequester : req.body.chatRequester,
+    const chatRoomInfo1 = {
+        chatRequester : [ req.body.chatRequester ],
         chatResponser : req.body.chatResponser
     }
-    db.collection( "chatRoom" ).findOne( chatRoomInfo ).then( chatRoomRes => {
+    const chatRoomInfo2 = {
+        chatRequester : req.body.chatResponser,
+        chatResponser : [ req.body.chatRequester ]
+    }
+
+    const chatRoomCreateData = {
+        chatRequester   : [ req.body.chatRequester ],
+        chatResponser   : req.body.chatResponser,
+        chatCreateDate  : new Date(),
+        chatRoomSubject : req.body.chatRequester,
+        chatRoomDesc    : `${ req.body.chatRequester }, ${ req.body.chatResponser.toString() }의 채팅방`
+    }
+    db.collection( "chatRoom" ).findOne( chatRoomInfo1 ).then( chatRoomRes => {
         if( chatRoomRes ) {
             res.status( 200 ).send( "existChatRoom" );
         } else {
-            db.collection( "chatRoom" ).insertOne( req.body ).then( () => {
-                res.status( 200 ).send( "createComplete" );
+            db.collection( "chatRoom" ).findOne( chatRoomInfo2 ).then( chatRoomRes2 => {
+                if( chatRoomRes2 ) {
+                    res.status( 200 ).send( "existChatRoom" );
+                } else {
+                    db.collection( "chatRoom" ).insertOne( chatRoomCreateData ).then( () => {
+                        res.status( 200 ).send( "createComplete" );
+                    } );
+                }
             } );
         }
     } );

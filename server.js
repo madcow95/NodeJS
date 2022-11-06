@@ -131,7 +131,10 @@ app.get( "/chatRoom", ( req, res ) => {
             }
         } );
         db.collection( "chatRoom" ).find( { chatRequester : userInfo.username } ).toArray().then( chatRoomRes => {
-            res.render( "chatRoom.ejs", { chatRooms : chatRoomRes, user : userInfo, allMembers : memberArr } );
+            db.collection( "chatRoom" ).find( { chatResponser : userInfo.username } ).toArray().then( chatRoomRes2 => {
+                const allChatRoom = chatRoomRes.concat( chatRoomRes2 );
+                res.render( "chatRoom.ejs", { chatRooms : allChatRoom, user : userInfo, allMembers : memberArr } );
+            } );
         } )
     } );
     // db.collection( "chatRoom", { chatRequester : userInfo.username }, ( chatRoomErr, chatRoomRes ) => {
@@ -147,7 +150,7 @@ io.on( "connection", ( socket ) => {
         console.log(data);
         db.collection( "chatRoomMessages" ).insertOne( data );
         // socket에 접속한 모든 사람에게 전송해줌.
-        // io.emit( "broadcast", data );
+        io.emit( "broadcast", data );
         // socket.id => 현재 socket에 접속한 사람들
         // io.to(socket.id).emit("broadcast", data); => 특정한 사람에게만 전송 1:1 채팅
     } );
