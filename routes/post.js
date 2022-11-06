@@ -182,6 +182,7 @@ router.get( "/getImage/:imageName", ( req, res ) => {
 } );
 
 router.post( "/chatRoom", ( req, res ) => {
+    console.log(req.body);
     const chatRoomInfo1 = {
         chatRequester : [ req.body.chatRequester ],
         chatResponser : req.body.chatResponser
@@ -190,14 +191,7 @@ router.post( "/chatRoom", ( req, res ) => {
         chatRequester : req.body.chatResponser,
         chatResponser : [ req.body.chatRequester ]
     }
-
-    const chatRoomCreateData = {
-        chatRequester   : [ req.body.chatRequester ],
-        chatResponser   : req.body.chatResponser,
-        chatCreateDate  : new Date(),
-        chatRoomSubject : req.body.chatRequester,
-        chatRoomDesc    : `${ req.body.chatRequester }, ${ req.body.chatResponser.toString() }의 채팅방`
-    }
+    req.body.chatRequester = [ req.body.chatRequester ];
     db.collection( "chatRoom" ).findOne( chatRoomInfo1 ).then( chatRoomRes => {
         if( chatRoomRes ) {
             res.status( 200 ).send( "existChatRoom" );
