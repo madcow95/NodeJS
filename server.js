@@ -117,11 +117,6 @@ app.get( "/findUserInfo", ( req, res ) => {
     res.render( "findUserInfo.ejs", { user : userInfo } );
 } );
 
-app.get( "/socket", ( req, res ) => {
-    const userInfo = req.user;
-    res.render( "socket.ejs", { user : userInfo } );
-} );
-
 app.get( "/chatRoom", ( req, res ) => {
     const userInfo = req.user;
     db.collection( "member" ).find().toArray().then( memberArr => {
@@ -137,10 +132,6 @@ app.get( "/chatRoom", ( req, res ) => {
             } );
         } )
     } );
-    // db.collection( "chatRoom", { chatRequester : userInfo.username }, ( chatRoomErr, chatRoomRes ) => {
-    //     console.log({chatRoomRes});
-    //     res.render( "chatRoom.ejs", { chatRooms : chatRoomRes, user : userInfo } );
-    // } );
 } );
 
 // 일종의 Event Listener : Web Socket에 접속시 실행할 때
@@ -154,10 +145,6 @@ io.on( "connection", ( socket ) => {
         // socket.id => 현재 socket에 접속한 사람들
         // io.to(socket.id).emit("broadcast", data); => 특정한 사람에게만 전송 1:1 채팅
     } );
-    
-    /**
-     * socket.join( 'room1' ) => 채팅방 생성, 유저를 넣어줌
-     */
 } );
 
 

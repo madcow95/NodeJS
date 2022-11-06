@@ -164,7 +164,7 @@
     }
   }
 
-  const sendMessage = ( msg, sender, responser ) => {
+  const sendMessage = ( msg, sender ) => {
     const msgInfo = {
       chatRoomId    : chatRoomID,
       chatRequester : sender,
@@ -175,13 +175,13 @@
     $( "#chat-input" ).val( "" );
   }
 
-  socket.on( "broadcast", ( data ) => {
-    const parentEle = $( ".chat-content" );
-    if( data.chatRequester == "<%= user.username %>" ) {
-      parentEle.append( `<li><span class="chat-box mine">${ data.chatMessage }</span></li>` );
-    } else {
-      parentEle.append( `<li><span class="chat-box">${ data.chatMessage }</span></li>` );
-    }
-  } );
+socket.on( "broadcast", ( data ) => {
+  const parentEle = $( ".chat-content" );
+  if( data.chatRequester == "<%= user.username %>" ) {
+    parentEle.append( `<li><span class="chat-box mine">${ data.chatMessage }</span></li>` );
+  } else {
+    parentEle.append( `<li><span class="chat-box">${ data.chatMessage }</span></li>` );
+  }
+} );
 </script>
 </html>
