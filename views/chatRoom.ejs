@@ -130,6 +130,7 @@
 
   const socket = io();
   const showChatDiv = ( chatId ) => {
+    if( chatRoomID === chatId ) return;
     chatRoomID = chatId;
     $( "#chatDiv" ).attr( "style", "display: ;" );
     const parentEle = $( ".chat-content" );

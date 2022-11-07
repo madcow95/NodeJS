@@ -75,16 +75,6 @@ router.post( "/addReply", ( req, res ) => {
     db.collection( "postReply" ).insertOne( replyData, ( err ) => {
         if( err ) console.log( err );
         res.status( 200 ).send( "write complete" );
-        // db.collection( "post" ).findOne( { _id : req.body.postNum }, ( searchErr, searchRes ) => {
-        //     db.collection( "postReply" ).find( { postNum : searchRes._id } ).toArray( ( replyErr, replyRes ) => {
-        //         console.log(replyRes);
-        //         if( req.user ) {
-        //             res.render( "detail.ejs", { searchData : searchRes, user : req.user, replyInfo : replyRes } );
-        //         } else {
-        //             res.render( "detail.ejs", { searchData : searchRes, user : null, replyInfo : replyRes } );
-        //         }
-        //     } );
-        // } );
     } );
 } );
 
@@ -182,7 +172,6 @@ router.get( "/getImage/:imageName", ( req, res ) => {
 } );
 
 router.post( "/chatRoom", ( req, res ) => {
-    console.log(req.body);
     const chatRoomInfo1 = {
         chatRequester : [ req.body.chatRequester ],
         chatResponser : req.body.chatResponser
@@ -215,40 +204,6 @@ router.post( "/getChatMsg", ( req, res ) => {
     } );
 } );
 
-router.get( "/chatRoom/:chatInfo", ( req, res ) => {
-    const userInfo = req.user;
-    const chatInfoArr = req.params.chatInfo.split( "||" );
-    const postId = chatInfoArr[0];
-    const chatRoomInfo = {
-        postid : postId
-    }
-    // 게시글의 unique 값인 게시글 번호를 db에 조회한다.
-    db.collection( "chatRoom" ).findOne( chatRoomInfo, ( findChatErr, findChatRes ) => {
-        let targetObjId = undefined;
-        // 주어진 정보로 생성된 채팅방이 없을 때
-        if( !findChatRes ) {
-            chatRoomInfo.createDate = new Date();
-            // 채팅방을 생성한다.
-            db.collection( "chatRoom" ).insertOne( chatRoomInfo, ( insertChatRoomErr, insertChatRoomRes ) => {
-                targetObjId = insertChatRoomRes.insertedId.toString();
-                db.collection( "chatRoom" ).findOne( { _id : ObjectId( targetObjId ) }, ( chatRoomFindErr, chatRoomFindRes ) => {
-                    findChatRes = chatRoomFindRes._id.toString();
-                } );
-            } );
-        // 주어진 정보로 생성된 채팅방이 있을 때
-        } else {
-            // 불러온 채팅방의 ObjectID를 저장한다.
-            targetObjId = findChatRes._id.toString();
-        }
-        // 채팅방의 ObjectID로 채팅방의 메세지들을 불러온다.
-        db.collection( "chatMessages" ).find( { chatInfos : targetObjId } ).toArray( ( msgErr, msgRes ) => {
-            // 로그인한 유저, 채팅방 정보, 채팅방 정보 안의 메세지들을 render시킨다.
-            msgRes = [];
-            res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes, msgInfos : msgRes } );
-        } );
-    } );
-} );
-
 router.post( "/sendMsg", ( req, res ) => {
     db.collection( "chatMessages" ).insertOne( req.body, ( insertErr, insertRes ) => {
         if( insertErr ) {
@@ -259,7 +214,43 @@ router.post( "/sendMsg", ( req, res ) => {
     } );
 } );
 
+// chat 기능 UI 수정으로 인한 주석처리
+// router.get( "/chatRoom/:chatInfo", ( req, res ) => {
+//     const userInfo = req.user;
+//     const chatInfoArr = req.params.chatInfo.split( "||" );
+//     const postId = chatInfoArr[0];
+//     const chatRoomInfo = {
+//         postid : postId
+//     }
+//     // 게시글의 unique 값인 게시글 번호를 db에 조회한다.
+//     db.collection( "chatRoom" ).findOne( chatRoomInfo, ( findChatErr, findChatRes ) => {
+//         let targetObjId = undefined;
+//         // 주어진 정보로 생성된 채팅방이 없을 때
+//         if( !findChatRes ) {
+//             chatRoomInfo.createDate = new Date();
+//             // 채팅방을 생성한다.
+//             db.collection( "chatRoom" ).insertOne( chatRoomInfo, ( insertChatRoomErr, insertChatRoomRes ) => {
+//                 targetObjId = insertChatRoomRes.insertedId.toString();
+//                 db.collection( "chatRoom" ).findOne( { _id : ObjectId( targetObjId ) }, ( chatRoomFindErr, chatRoomFindRes ) => {
+//                     findChatRes = chatRoomFindRes._id.toString();
+//                 } );
+//             } );
+//         // 주어진 정보로 생성된 채팅방이 있을 때
+//         } else {
+//             // 불러온 채팅방의 ObjectID를 저장한다.
+//             targetObjId = findChatRes._id.toString();
+//         }
+//         // 채팅방의 ObjectID로 채팅방의 메세지들을 불러온다.
+//         db.collection( "chatMessages" ).find( { chatInfos : targetObjId } ).toArray( ( msgErr, msgRes ) => {
+//             // 로그인한 유저, 채팅방 정보, 채팅방 정보 안의 메세지들을 render시킨다.
+//             msgRes = [];
+//             res.render( "chatRoom.ejs", { user : userInfo, chatInfos : findChatRes, msgInfos : msgRes } );
+//         } );
+//     } );
+// } );
+
 // 서버 -> 유저 일방적 통신
+// EventSource -> socket전환으로 주석처리
 // router.get( "/chatRefresh/:postId", ( req, res ) => {
 //     res.writeHead( 200, {
 //         "Connection" : "keep-alive",
