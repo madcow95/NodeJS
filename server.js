@@ -5,10 +5,11 @@ const MethodOverride    = require( "method-override" );
 const passport          = require( "passport" );
 const localStrategy     = require( "passport-local" ).Strategy;
 const session           = require( "express-session" );
+const app               = express();
+const path              = require( "path" );
 const CommonUtil        = require( "./util/common.js" );
 
 const mainDir           = `${ __dirname }/views`;
-const app               = express();
 const http              = require( "http" ).createServer( app );
 const { Server }        = require( "socket.io" );
 const io                = new Server( http );
@@ -135,6 +136,11 @@ app.get( "/chatRoom", ( req, res ) => {
             } );
         } )
     } );
+} );
+
+app.use( express.static( path.join( __dirname, "nodereact/build" ) ) );
+app.get( "/test", ( req, res ) => {
+    res.sendFile( path.join( __dirname, "nodereact/build/index.html" ) );
 } );
 
 // 일종의 Event Listener : Web Socket에 접속시 실행할 때
