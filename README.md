@@ -131,3 +131,6 @@ NodeJS : 16.17.0
 
 ## 22/11/06
 ### 1. EventSource에서 socket으로 전환 완료
+공부는 끝 지금 하고있는 React도 공부를 끝내고 React + NodeJS + Express + MongoDB로 프로젝트를 진행해야겠다.
+재밌었다 NodeJS
+2022-11-17
